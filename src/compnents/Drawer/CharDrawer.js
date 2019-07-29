@@ -22,7 +22,7 @@ class CharDrawer extends Component{
       >
         <div style={{align:'center',textAlign:'center'}}>
           <img
-            src={this.iconURL+(this.props.charSelected?this.props.charSelected:'-1')+'.jpg'} />
+            alt="icon" src={this.iconURL+(this.props.charSelected?this.props.charSelected:'-1')+'.jpg'} />
         </div>
         <hr/>
         <p>{'姓名：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].Name:'')}</p>

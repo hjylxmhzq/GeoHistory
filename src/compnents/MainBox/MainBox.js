@@ -23,7 +23,8 @@ class MainBox extends Component {
     if (this.map && this.stopUpdate) {
       if (this.map.layers.length) {
         this.map.layers.items.map((layer) => {
-          layer.visible = false
+          layer.visible = false;
+          return void 0;
         })
         this.search.sources = []
         if (this.props.isShowYear) {
@@ -59,7 +60,8 @@ class MainBox extends Component {
             
             if (this.highlightSelectChar.length) {
               this.highlightSelectChar.map((highlight) => {
-                highlight.remove()
+                highlight.remove();
+                return void 0;
               })
             }
             if(this.t) clearTimeout(this.t)
@@ -164,6 +166,7 @@ class MainBox extends Component {
         if (this.highlightSelectChar.length) {
           this.highlightSelectChar.map((highlight) => {
             highlight.remove()
+            return void 0;
           })
         }
         let feature = result.features
@@ -186,6 +189,7 @@ class MainBox extends Component {
         setTimeout(()=>{
           this.drawLine(feature,layerView)
         },1000)
+        return void 0;
       })
     })
   }
@@ -514,11 +518,13 @@ class MainBox extends Component {
           console.log(this.state)
           this.setState({isPlay:!this.state.isPlay})
           this.map.layers.items.map((f,idx)=>{
-            f.definitionExpression = undefined
+            f.definitionExpression = undefined;
+            return void 0;
           })
           clearInterval(t)
         }
-        i++
+        i++;
+        return void 0;
       },2000)
     }
     play()

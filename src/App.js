@@ -36,36 +36,21 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch(staticPath + 'json/year.json')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          years: data.Tang
-        })
+    const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
+    const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
+    const eventData = fetch(staticPath + 'json/event.json').then(res => res.json())
+    const experienceData = fetch(staticPath + 'json/experience.json').then(res => res.json())
+    Promise.all([yearData, profileData, eventData, experienceData]).then((dataList) => {
+      console.log(dataList)
+      this.setState({
+        years: dataList[0],
+        charProfiles: dataList[1],
+        events: dataList[2],
+        experience: dataList[3]
       })
-    fetch(staticPath + 'json/profile.json')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          charProfiles: data.Tang
-        })
-        console.log(data)
-      })
-    fetch('./json/event.json')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          events: data.Tang
-        })
-      })
-    fetch('./json/experience.json')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          experience: data.Tang
-        })
-        console.log(data)
-      })
+    }).catch((err) => {
+      console.log(err);
+    })
   }
   componentWillUpdate() {
 
@@ -176,7 +161,7 @@ class App extends Component {
   }
   render() {
     const exp = []
-    this.state.experience.map((e) => {
+    this.state.experience.length && this.state.experience['Tang'].map((e) => {
       if (e.ID === this.state.charSelectedKeys[0]) exp.push(e)
       return void 0;
     })

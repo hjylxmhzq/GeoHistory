@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
-import './LeftSider.less';
+import s from './LeftSider.less';
 
 const { SubMenu } = Menu;
 
@@ -77,25 +77,40 @@ class LeftSider extends Component {
     }
   }
   render() {
-    const menu = (
+    const years = (
       <Menu>
-        <Menu.Item>1st menu item</Menu.Item>
-        <Menu.Item>2nd menu item</Menu.Item>
-        <SubMenu title="sub menu">
-          <Menu.Item>3rd menu item</Menu.Item>
-          <Menu.Item>4th menu item</Menu.Item>
-        </SubMenu>
-        <SubMenu title="disabled sub menu" disabled>
-          <Menu.Item>5d menu item</Menu.Item>
-          <Menu.Item>6th menu item</Menu.Item>
-        </SubMenu>
+        {
+          ((years) => {
+            const yearList = [];
+            for (let name of Object.keys(years)) {
+              yearList.push(
+                <SubMenu title={name} >
+                  { years[name].map(year => <Menu.Item>{year.Year}</Menu.Item>) }
+                </SubMenu>
+              )
+            }
+            return yearList;
+          })(this.props.years)
+        }
       </Menu>
     );
     return (
-      <div className="tools" >
-        <Dropdown overlay={menu}>
-          <Button>年代边界</Button>
-        </Dropdown>
+      <div className={s.selectors}>
+        <div>
+          <Dropdown overlay={years}>
+            <Button>年代边界</Button>
+          </Dropdown>
+        </div>
+        <div>
+          <Dropdown overlay={years}>
+            <Button>历史人物</Button>
+          </Dropdown>
+        </div>
+        <div>
+          <Dropdown overlay={years}>
+            <Button>历史事件</Button>
+          </Dropdown>
+        </div>
       </div>
     );
   }

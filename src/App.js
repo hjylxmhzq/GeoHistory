@@ -7,6 +7,9 @@ import ExpTimeline from './compnents/Timelist/ExpTimeline'
 import { Layout } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
+import Config from './config';
+
+const staticPath = Config.staticPath;
 
 const { Content } = Layout
 class App extends Component {
@@ -33,14 +36,14 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('./json/year.json')
+    fetch(staticPath + 'json/year.json')
       .then(res => res.json())
       .then((data) => {
         this.setState({
           years: data.Tang
         })
       })
-    fetch('./json/profile.json')
+    fetch(staticPath + 'json/profile.json')
       .then(res => res.json())
       .then((data) => {
         this.setState({
@@ -180,11 +183,11 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
-          <LeftSider
+        <LeftSider
             years={this.state.years} charProfiles={this.state.charProfiles} events={this.state.events}
             onSelect={this.handleSelectChange.bind(this)} onYearOpen={this.handleYearOpen.bind(this)}
             onEventOpen={this.handleEventOpen.bind(this)} onCharOpen={this.handleCharOpen.bind(this)} />
+        <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
             <MainBox
               yearSelected={this.state.yearSelectedKeys[0]}

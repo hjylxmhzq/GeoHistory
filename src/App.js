@@ -169,12 +169,15 @@ class App extends Component {
       <div className="App">
         <Header />
         <LeftSider
-            years={this.state.years} charProfiles={this.state.charProfiles} events={this.state.events}
-            onSelect={this.handleSelectChange.bind(this)} onYearOpen={this.handleYearOpen.bind(this)}
-            onEventOpen={this.handleEventOpen.bind(this)} onCharOpen={this.handleCharOpen.bind(this)} />
+          years={this.state.years} charProfiles={this.state.charProfiles} events={this.state.events}
+          onSelect={this.handleSelectChange.bind(this)} onYearOpen={this.handleYearOpen.bind(this)}
+          onEventOpen={this.handleEventOpen.bind(this)} onCharOpen={this.handleCharOpen.bind(this)} />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
             <MainBox
+              years={this.state.years}
+              charProfiles={this.state.charProfiles}
+              events={this.state.events}
               yearSelected={this.state.yearSelectedKeys[0]}
               charSelected={this.state.charSelectedKeys[0]}
               eventSelected={this.state.eventSelectedKeys[0]}

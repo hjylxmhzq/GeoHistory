@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
+import Slider from '../Slider/Slider';
 
 
 class MainBox extends Component {
@@ -539,7 +540,6 @@ class MainBox extends Component {
     })();
   }
   render() {
-    console.log(this.state)
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
@@ -552,6 +552,7 @@ class MainBox extends Component {
             {this.state.playControllerText}
           </Button>
         </div>
+        <Slider years={this.props.years} />
       </>
     )
   }

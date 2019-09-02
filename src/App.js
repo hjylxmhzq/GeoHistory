@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
-import MainBox from './compnents/MainBox/MainBox'
+import MainBox from './compnents/MainBox/mainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
 import ExpTimeline from './compnents/Timelist/ExpTimeline'
 import { Layout } from 'antd';

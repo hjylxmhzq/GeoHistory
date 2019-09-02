@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Button} from 'antd';
+import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
+import s from './mainBox.less';
 
 
 class MainBox extends Component {
@@ -12,8 +13,10 @@ class MainBox extends Component {
     this.baseFeatureUrl = "http://172.20.32.70:6080/arcgis/rest/services/TD/MapServer/"
     this.highlightSelectChar = []
     this.state = {
-      isPlay:false,
+      isPlay: false,
+      playControllerText: '播放边界变化'
     }
+    this.playTimer = null;
     this.stopUpdate = true
   }
   componentWillMount() {
@@ -44,36 +47,36 @@ class MainBox extends Component {
           this.search.sources.push(this.searchSource[14])
         }
         else {
-          if(this.t)clearTimeout(this.t)
+          if (this.t) clearTimeout(this.t)
           this.graphic.geometry = undefined
         }
         //
-        if(this.props.isCharSelectChangeToAnother && !this.props.isEventSelectChangeToAnother && !this.props.isYearSelectChangeToAnother){
+        if (this.props.isCharSelectChangeToAnother && !this.props.isEventSelectChangeToAnother && !this.props.isYearSelectChangeToAnother) {
           if (this.props.charSelected) {
-            this.tangFeatureLayers[14].definitionExpression = 'ID='+this.props.charSelected
+            this.tangFeatureLayers[14].definitionExpression = 'ID=' + this.props.charSelected
             this.tangFeatureLayers[14].labelsVisible = true
-            if(this.t) clearTimeout(this.t)
+            if (this.t) clearTimeout(this.t)
             this.queryForChar()
-          }else {
+          } else {
             this.tangFeatureLayers[14].definitionExpression = undefined
             this.tangFeatureLayers[14].labelsVisible = false
-            
+
             if (this.highlightSelectChar.length) {
               this.highlightSelectChar.map((highlight) => {
                 highlight.remove();
                 return void 0;
               })
             }
-            if(this.t) clearTimeout(this.t)
+            if (this.t) clearTimeout(this.t)
             this.graphic.geometry = undefined
           }
         }
 
         //
-        if(this.props.isEventSelectChangeToAnother && !this.props.isCharSelectChangeToAnother && !this.props.isYearSelectChangeToAnother){
+        if (this.props.isEventSelectChangeToAnother && !this.props.isCharSelectChangeToAnother && !this.props.isYearSelectChangeToAnother) {
           if (this.props.eventSelected) {
             this.queryForEvent()
-          } 
+          }
           else {
             if (this.highlightSelectEvent) {
               this.highlightSelectEvent.remove()
@@ -104,7 +107,7 @@ class MainBox extends Component {
     tmp.push(pointB);//防止插值出来的最后一个点到不了B点
     return tmp;
   }
-  drawLine(feature,layerView) {
+  drawLine(feature, layerView) {
     this.traj = []
     for (let i = 0; i < feature.length - 1; i++) {
       this.traj.push(this.interpolation(feature[i].geometry, feature[i + 1].geometry))
@@ -132,25 +135,25 @@ class MainBox extends Component {
     };
     let cnt = 0
     let draw = () => {
-      if(this.props.isShowChar && this.props.charSelected){
+      if (this.props.isShowChar && this.props.charSelected) {
         if (polyline.paths.length > 0) {
           this.t = setTimeout(() => {
             let tmp = polyline.paths.shift()
             nPolyline.paths.push(tmp);
-            if(tmp[0]===feature[cnt].geometry.x && tmp[1]===feature[cnt].geometry.y){
-              if(this.props.curDrawingPoint) this.props.curDrawingPoint(cnt)
+            if (tmp[0] === feature[cnt].geometry.x && tmp[1] === feature[cnt].geometry.y) {
+              if (this.props.curDrawingPoint) this.props.curDrawingPoint(cnt)
               this.highlightSelectChar.push(layerView.highlight(
                 feature[cnt++].attributes['FID']))
             }
             this.graphic.geometry = nPolyline;
 
-            this.view.goTo({center:[tmp[0]+3,tmp[1]],zoom:6},{duration:500,easing: 'in-out-expo'})
+            this.view.goTo({ center: [tmp[0] + 3, tmp[1]], zoom: 6 }, { duration: 500, easing: 'in-out-expo' })
             draw();
           }, 100)
-        }else{
+        } else {
           clearTimeout(this.t)
         }
-      }else{
+      } else {
         clearTimeout(this.t)
         this.graphic.geometry = undefined
       }
@@ -179,16 +182,16 @@ class MainBox extends Component {
         // y /= feature.length
         this.view.goTo(
           {
-            center:[feature[0].geometry.x+3,feature[0].geometry.y],
+            center: [feature[0].geometry.x + 3, feature[0].geometry.y],
             zoom: 6
           },
           {
             duration: 1000,
             easing: 'in-out-expo'
           })
-        setTimeout(()=>{
-          this.drawLine(feature,layerView)
-        },1000)
+        setTimeout(() => {
+          this.drawLine(feature, layerView)
+        }, 1000)
         return void 0;
       })
     })
@@ -231,7 +234,7 @@ class MainBox extends Component {
       'esri/widgets/ScaleBar',
       'esri/widgets/Search',
       "dojo/domReady!"
-    ], this.dojoUrl).then(([Map, Basemap, TileLayer, MapView, FeatureLayer,Graphic, Zoom, Compass, ScaleBar,Search]) => {
+    ], this.dojoUrl).then(([Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
       //
       const popupTemplateForCountry = {
         // autocasts as new PopupTemplate()
@@ -429,7 +432,7 @@ class MainBox extends Component {
       this.graphic = new Graphic()
       let zoom = new Zoom({
         view: this.view,
-        layout:'horizontal'
+        layout: 'horizontal'
       })
       let compass = new Compass({
         view: this.view
@@ -439,39 +442,39 @@ class MainBox extends Component {
         unit: 'metric'
       })
       this.search = new Search({
-        view:this.view,
-        allPlaceholder:'找点什么',
-        includeDefaultSources:false,
+        view: this.view,
+        allPlaceholder: '找点什么',
+        includeDefaultSources: false,
       })
-      this.searchSource = this.tangFeatureLayers.map((layer,idx)=>{
+      this.searchSource = this.tangFeatureLayers.map((layer, idx) => {
         return {
-          layer:layer,
+          layer: layer,
           searchFields:
-            idx<=12?['Name']:
-            idx===13?["HName"]:
-            idx===14?['name']:
-            ['CityName'],
-          suggestionTemplate: 
-            idx<=12?"{Name}":
-            idx===13?"{HName}, 城市:{HCityName}, 起始时间:{STime}, 结束时间:{ETime}":
-            idx===14?"{name}, 年份:{year}, 地点:{place}, 经历:{content}":
-            "{CityName}, 经度:{lng}, 纬度:{lat}",
+            idx <= 12 ? ['Name'] :
+              idx === 13 ? ["HName"] :
+                idx === 14 ? ['name'] :
+                  ['CityName'],
+          suggestionTemplate:
+            idx <= 12 ? "{Name}" :
+              idx === 13 ? "{HName}, 城市:{HCityName}, 起始时间:{STime}, 结束时间:{ETime}" :
+                idx === 14 ? "{name}, 年份:{year}, 地点:{place}, 经历:{content}" :
+                  "{CityName}, 经度:{lng}, 纬度:{lat}",
           displayField:
-            idx<=12?'Name':
-            idx===13?"HName":
-            idx===14?'name':
-            'CityName',
-          exactMatch:false,
+            idx <= 12 ? 'Name' :
+              idx === 13 ? "HName" :
+                idx === 14 ? 'name' :
+                  'CityName',
+          exactMatch: false,
           name:
-            idx<=12?"国家":
-            idx===13?"事件":
-            idx===14?"人物":
-            "城市",
+            idx <= 12 ? "国家" :
+              idx === 13 ? "事件" :
+                idx === 14 ? "人物" :
+                  "城市",
           placeholder:
-            idx<=12?"查找国家-例：唐":
-            idx===13?"查找事件-例：贞观之治":
-            idx===14?"查找人物-例：李白":
-            "查找城市-例：长安",
+            idx <= 12 ? "查找国家-例：唐" :
+              idx === 13 ? "查找事件-例：贞观之治" :
+                idx === 14 ? "查找人物-例：李白" :
+                  "查找城市-例：长安",
         }
       })
       this.view.graphics.add(this.graphic)
@@ -483,58 +486,73 @@ class MainBox extends Component {
       let len = this.map.layers.items.length
       let queryLayer = this.map.layers.items[len - 1]
       this.view.when(function () {
-          return queryLayer.when(function () {
-            let query = queryLayer.createQuery()
-            return queryLayer.queryFeatures(query)
-          })
+        return queryLayer.when(function () {
+          let query = queryLayer.createQuery()
+          return queryLayer.queryFeatures(query)
+        })
       })
       //
     })
   }
 
-  handleLayerPlay(e){
+  handleLayerPlay(e) {
     this.stopUpdate = !this.stopUpdate
-    this.setState({isPlay:!this.state.isPlay})
+    this.setState({ isPlay: !this.state.isPlay })
     console.log(this.state.isPlay)
 
-    this.view.goTo({center:[115, 32.1],zoom:4},{duration:1000,easing:'in-out-expo'})
-    for(let i=0;i<13;i++){
+    this.view.goTo({ center: [115, 32.1], zoom: 4 }, { duration: 1000, easing: 'in-out-expo' })
+    for (let i = 0; i < 13; i++) {
       this.map.layers.items[i].visible = false
       this.map.layers.items[i].definitionExpression = "Name='唐'"
     }
-    var play = ()=>{
-      let i=0
-      let t=setInterval(()=>{
-        if(i<=12) {
-          if(i) {
-            this.map.layers.items[i-1].visible = false
+    (() => {
+      let i = 0
+      if (this.playTimer) {
+        clearInterval(this.playTimer);
+        this.playTimer = null;
+        this.setState({ playControllerText: '播放边界变化', isPlay: false })
+        return;
+      }
+      this.setState({ playControllerText: '暂停播放', isPlay: true })
+      this.playTimer = setInterval(() => {
+        if (i <= 12) {
+          if (i) {
+            this.map.layers.items[i - 1].visible = false
           }
           this.map.layers.items[i].visible = true
           this.map.layers.items[15].visible = true
           console.log(i)
         }
-        if(i===13){
+        if (i === 13) {
           this.stopUpdate = !this.stopUpdate
-          console.log(this.state)
-          this.setState({isPlay:!this.state.isPlay})
-          this.map.layers.items.map((f,idx)=>{
+          this.setState({ isPlay: false })
+          this.map.layers.items.map((f, idx) => {
             f.definitionExpression = undefined;
             return void 0;
           })
-          clearInterval(t)
+          clearInterval(this.playTimer);
+          this.playTimer = null;
         }
         i++;
         return void 0;
-      },2000)
-    }
-    play()
+      }, 2000)
+    })();
   }
   render() {
+    console.log(this.state)
     return (
-        <div id='mapDiv' style={{ height: '100%', width: '100%',padding:'5px'}}>
-          <Button loading={this.state.isPlay} onClick={this.handleLayerPlay.bind(this)} ghost icon={'caret-right'} 
-          style={{position:'absolute',left:'20px',bottom:'50px'}}>播放边界变化</Button>
+      <>
+        <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
+        <div className={s['play_button']}>
+          <Button
+            onClick={this.handleLayerPlay.bind(this)}
+            ghost
+            icon={this.state.isPlay ? 'pause' : 'caret-right'}
+          >
+            {this.state.playControllerText}
+          </Button>
         </div>
+      </>
     )
   }
 }

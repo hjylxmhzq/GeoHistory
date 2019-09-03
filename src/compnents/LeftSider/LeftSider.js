@@ -103,17 +103,17 @@ class LeftSider extends Component {
     return (
       <div className={s.selectors}>
         <div>
-          <Dropdown overlay={years}>
+          <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentYear || '年代边界'}</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years}>
+          <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentPeople || '历史人物'}</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years}>
+          <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentEvent || '历史事件'}</Button>
           </Dropdown>
         </div>

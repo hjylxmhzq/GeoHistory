@@ -9,6 +9,7 @@ class LeftSider extends Component {
     super()
     this.state = {
       collapsed: false,
+      yearLabel: undefined,
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: []
@@ -21,9 +22,14 @@ class LeftSider extends Component {
   };
 
   handleSelectChange(e) {
-    if (e.keyPath[1] === 'years') {
+    console.log(e.key[0])
+    // 选择年份
+    if (e.key[0] === 'Y') {
+      
       if (!this.state.yearSelectedKeys) {
-        this.setState({ yearSelectedKeys: [e.key] })
+        let yearLabel = e.key.slice(3)
+        console.log(yearLabel)
+        this.setState({ yearSelectedKeys: [e.key],yearLabel:yearLabel})
       }
       else if (this.state.yearSelectedKeys[0] === e.key) {
         this.setState({ yearSelectedKeys: [] })
@@ -32,6 +38,7 @@ class LeftSider extends Component {
         this.setState({ yearSelectedKeys: [e.key] })
       }
     }
+    // 选择人物
     if (e.keyPath[1] === 'characters') {
       if (!this.state.charSelectedKeys) {
         this.setState({ charSelectedKeys: [e.key] })
@@ -76,6 +83,12 @@ class LeftSider extends Component {
       this.props.onYearOpen(e)
     }
   }
+  //
+  onChange = value => {
+    console.log(value);
+    this.setState({ value });
+  };
+  //
   render() {
     const years = (
       <Menu>
@@ -84,8 +97,8 @@ class LeftSider extends Component {
             const yearList = [];
             for (let name of Object.keys(years)) {
               yearList.push(
-                <SubMenu title={name} >
-                  { years[name].map(year => <Menu.Item>{year.Year}</Menu.Item>) }
+                <SubMenu title={name} key={'Y-'+name}>
+                  { years[name].map((year,i) => <Menu.Item key={'Y-'+i+name+' '+year.Year} onClick={this.handleSelectChange.bind(this)}>{year.Year}</Menu.Item>) }
                 </SubMenu>
               )
             }
@@ -97,17 +110,17 @@ class LeftSider extends Component {
     return (
       <div className={s.selectors}>
         <div>
-          <Dropdown overlay={years}>
-            <Button>年代边界</Button>
+          <Dropdown overlay={years} trigger={['click']}>
+            <Button>{'年代边界'+this.state.yearSelectedKeys}</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years}>
+          <Dropdown overlay={years} trigger={['click']}>
             <Button>历史人物</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years}>
+          <Dropdown overlay={years} trigger={['click']}>
             <Button>历史事件</Button>
           </Dropdown>
         </div>

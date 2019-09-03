@@ -13,14 +13,13 @@ class LeftSider extends Component {
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: [],
-      currentYear: null,
+      currentYear: ['Tang', ''],
       currentPeople: null,
       currentEvent: null
     };
   }
 
   onCollapse = collapsed => {
-    console.log(collapsed);
     this.setState({ collapsed });
   };
 
@@ -86,19 +85,26 @@ class LeftSider extends Component {
       this.props.onYearOpen(e)
     }
   }
-  handleYearSelect(year) {
-    this.setState({currentYear: year});
+  handleEventSelect(eventName) {
+    this.setState({currentEvent: eventName});
+  }
+  handlePeopleSelect(name) {
+    this.setState({currentPeople: name});
+  }
+  handleYearSelect(dynasty, year) {
+    this.setState({ currentYear: [dynasty, year] });
   }
   render() {
+
     const years = (
-      <Menu>
+      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
         {
           ((years) => {
             const yearList = [];
             for (let name of Object.keys(years)) {
               yearList.push(
                 <SubMenu title={name} >
-                  { years[name].map(year => <Menu.Item onClick={this.handleYearSelect.bind(this, year.Year)}>{year.Year}</Menu.Item>) }
+                  {years[name].map(year => <Menu.Item onClick={this.handleYearSelect.bind(this, name, year.Year)}>{year.Year}</Menu.Item>)}
                 </SubMenu>
               )
             }
@@ -107,21 +113,47 @@ class LeftSider extends Component {
         }
       </Menu>
     );
+    const events = (
+      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+        {this.props.events[this.state.currentYear[0]] &&
+          this.props.events[this.state.currentYear[0]].map(
+            event => (
+              <Menu.Item
+                onClick={this.handleEventSelect.bind(this, event.HName)}>
+                {event.HName}
+              </Menu.Item>
+            )
+          )}
+      </Menu>
+    );
+    const people = (
+      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+        {this.props.charProfiles[this.state.currentYear[0]] &&
+          this.props.charProfiles[this.state.currentYear[0]].map(
+            char => (
+              <Menu.Item
+              onClick={this.handlePeopleSelect.bind(this, char.Name)}>
+                {char.Name}
+              </Menu.Item>
+            )
+          )}
+      </Menu>
+    );
     return (
       <div className={s.selectors}>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
-            <Button>{this.state.currentYear || '年代边界'}</Button>
+            <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years} trigger={['click']}>
-            <Button>{this.state.currentPeople || '历史人物'}</Button>
+          <Dropdown overlay={people} trigger={['click']}>
+            <Button>{`${this.state.currentYear[0]}: ${this.state.currentPeople || '历史人物'}`}</Button>
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={years} trigger={['click']}>
-            <Button>{this.state.currentEvent || '历史事件'}</Button>
+          <Dropdown overlay={events} trigger={['click']}>
+            <Button>{`${this.state.currentYear[0]}: ${this.state.currentEvent || '历史事件'}`}</Button>
           </Dropdown>
         </div>
       </div>

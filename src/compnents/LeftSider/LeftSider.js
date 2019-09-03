@@ -11,7 +11,10 @@ class LeftSider extends Component {
       collapsed: false,
       yearSelectedKeys: [],
       eventSelectedKeys: [],
-      charSelectedKeys: []
+      charSelectedKeys: [],
+      currentYear: null,
+      currentPeople: null,
+      currentEvent: null
     };
   }
 
@@ -76,6 +79,9 @@ class LeftSider extends Component {
       this.props.onYearOpen(e)
     }
   }
+  handleYearSelect(year) {
+    this.setState({currentYear: year});
+  }
   render() {
     const years = (
       <Menu>
@@ -85,7 +91,7 @@ class LeftSider extends Component {
             for (let name of Object.keys(years)) {
               yearList.push(
                 <SubMenu title={name} >
-                  { years[name].map(year => <Menu.Item>{year.Year}</Menu.Item>) }
+                  { years[name].map(year => <Menu.Item onClick={this.handleYearSelect.bind(this, year.Year)}>{year.Year}</Menu.Item>) }
                 </SubMenu>
               )
             }
@@ -98,17 +104,17 @@ class LeftSider extends Component {
       <div className={s.selectors}>
         <div>
           <Dropdown overlay={years}>
-            <Button>年代边界</Button>
+            <Button>{this.state.currentYear || '年代边界'}</Button>
           </Dropdown>
         </div>
         <div>
           <Dropdown overlay={years}>
-            <Button>历史人物</Button>
+            <Button>{this.state.currentPeople || '历史人物'}</Button>
           </Dropdown>
         </div>
         <div>
           <Dropdown overlay={years}>
-            <Button>历史事件</Button>
+            <Button>{this.state.currentEvent || '历史事件'}</Button>
           </Dropdown>
         </div>
       </div>

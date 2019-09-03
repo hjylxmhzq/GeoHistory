@@ -12,7 +12,10 @@ class LeftSider extends Component {
       yearLabel: undefined,
       yearSelectedKeys: [],
       eventSelectedKeys: [],
-      charSelectedKeys: []
+      charSelectedKeys: [],
+      currentYear: null,
+      currentPeople: null,
+      currentEvent: null
     };
   }
 
@@ -83,12 +86,9 @@ class LeftSider extends Component {
       this.props.onYearOpen(e)
     }
   }
-  //
-  onChange = value => {
-    console.log(value);
-    this.setState({ value });
-  };
-  //
+  handleYearSelect(year) {
+    this.setState({currentYear: year});
+  }
   render() {
     const years = (
       <Menu>
@@ -97,8 +97,8 @@ class LeftSider extends Component {
             const yearList = [];
             for (let name of Object.keys(years)) {
               yearList.push(
-                <SubMenu title={name} key={'Y-'+name}>
-                  { years[name].map((year,i) => <Menu.Item key={'Y-'+i+name+' '+year.Year} onClick={this.handleSelectChange.bind(this)}>{year.Year}</Menu.Item>) }
+                <SubMenu title={name} >
+                  { years[name].map(year => <Menu.Item onClick={this.handleYearSelect.bind(this, year.Year)}>{year.Year}</Menu.Item>) }
                 </SubMenu>
               )
             }
@@ -111,17 +111,17 @@ class LeftSider extends Component {
       <div className={s.selectors}>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
-            <Button>{'年代边界'+this.state.yearSelectedKeys}</Button>
+            <Button>{this.state.currentYear || '年代边界'}</Button>
           </Dropdown>
         </div>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
-            <Button>历史人物</Button>
+            <Button>{this.state.currentPeople || '历史人物'}</Button>
           </Dropdown>
         </div>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
-            <Button>历史事件</Button>
+            <Button>{this.state.currentEvent || '历史事件'}</Button>
           </Dropdown>
         </div>
       </div>

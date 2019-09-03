@@ -15,7 +15,8 @@ class MainBox extends Component {
     this.highlightSelectChar = []
     this.state = {
       isPlay: false,
-      playControllerText: '播放边界变化'
+      playControllerText: '播放边界变化',
+      sliderValue: 0
     }
     this.playTimer = null;
     this.stopUpdate = true
@@ -496,6 +497,17 @@ class MainBox extends Component {
     })
   }
 
+  handleSliderChange(value) {
+    if (!this.map) {
+      return 0;
+    }
+    // TO FIX: slider切换年份不生效
+    for (let index = 0; index < this.map.layers.items.length; index++) {
+      this.map.layers.items[index].visible = index === value;
+    }
+    this.setState({sliderValue: value});
+  }
+
   handleLayerPlay(e) {
     this.stopUpdate = !this.stopUpdate
     this.setState({ isPlay: !this.state.isPlay })
@@ -522,7 +534,7 @@ class MainBox extends Component {
           }
           this.map.layers.items[i].visible = true
           this.map.layers.items[15].visible = true
-          console.log(i)
+          this.setState({sliderValue: i});
         }
         if (i === 13) {
           this.stopUpdate = !this.stopUpdate
@@ -540,6 +552,12 @@ class MainBox extends Component {
     })();
   }
   render() {
+    if (this.map) {
+      for (let index = 0; index < this.map.layers.items.length; index++) {
+        console.log(this.map.layers.items[index].visible)
+      }
+    }
+
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
@@ -552,7 +570,11 @@ class MainBox extends Component {
             {this.state.playControllerText}
           </Button>
         </div>
-        <Slider years={this.props.years} />
+        <Slider
+          years={this.props.years}
+          value={this.state.sliderValue}
+          onChange={this.handleSliderChange.bind(this)}  
+        />
       </>
     )
   }

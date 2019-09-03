@@ -18,6 +18,8 @@ export default function (props) {
         min={0}
         max={index - 1}
         tipFormatter={i => marks[i]}
+        value={props.value}
+        onChange={props.onChange}
       />
     </div>
   )

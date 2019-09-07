@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
+import { Popover } from 'antd';
 
 const { SubMenu } = Menu;
 
@@ -97,7 +98,7 @@ class LeftSider extends Component {
   render() {
 
     const years = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
           ((years) => {
             const yearList = [];
@@ -113,8 +114,9 @@ class LeftSider extends Component {
         }
       </Menu>
     );
+    console.log(this.props.years)
     const events = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
@@ -127,7 +129,7 @@ class LeftSider extends Component {
       </Menu>
     );
     const people = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.charProfiles[this.state.currentYear[0]] &&
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
@@ -141,6 +143,11 @@ class LeftSider extends Component {
     );
     return (
       <div className={s.selectors}>
+        <div>
+          <Popover placement="right" content={years} trigger="click">
+            <Button>Right</Button>
+          </Popover>
+        </div>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>

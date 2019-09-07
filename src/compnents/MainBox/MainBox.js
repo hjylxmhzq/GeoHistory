@@ -3,6 +3,10 @@ import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import Slider from '../Slider/Slider';
+import createSketch from './utils/sketch';
+import { YearSelector } from '../charts';
+import Search from '../Search';
+import config from '../../config';
 
 const BOUNDARY_LAYER_NUM = 121;
 
@@ -10,9 +14,9 @@ class MainBox extends Component {
   constructor() {
     super()
     this.tangFeatureLayers = []
-    this.dojoUrl = "http://tony-space.top:8007/arcgis_js_api/library/4.11/dojo/dojo.js"
+    this.dojoUrl = config.dojoServer;
     this.tileMapUrl = "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer"
-    this.baseFeatureUrl = "https://172.20.32.70:6443/arcgis/rest/services/country_boundary/MapServer/"
+    this.baseFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
     this.highlightSelectChar = []
     this.state = {
       isPlay: false,
@@ -20,7 +24,8 @@ class MainBox extends Component {
       sliderValue: 0
     }
     this.playTimer = null;
-    this.stopUpdate = true
+    this.stopUpdate = true;
+    this.selectGrphics = [];
   }
   componentDidMount() {
     this.initMap()
@@ -138,6 +143,8 @@ class MainBox extends Component {
 
   initMap() {
     EsriLoader.loadModules([
+      "esri/layers/GraphicsLayer",
+      "esri/widgets/Sketch",
       "esri/Map",
       "esri/Basemap",
       "esri/layers/TileLayer",
@@ -149,8 +156,9 @@ class MainBox extends Component {
       'esri/widgets/ScaleBar',
       'esri/widgets/Search',
       "dojo/domReady!"
-    ], this.dojoUrl).then(([Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
+    ], this.dojoUrl).then(([GraphicsLayer, Sketch, Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
       this.FeatureLayer = FeatureLayer;
+      this.graphicsLayer2 = new GraphicsLayer();
       this.currentBoundaryLayer = new FeatureLayer({
         url: this.baseFeatureUrl,
         id: '0',
@@ -191,12 +199,14 @@ class MainBox extends Component {
         allPlaceholder: '找点什么',
         includeDefaultSources: false,
       })
+      const sketch = createSketch(this, Sketch);
       this.view.graphics.add(this.graphic)
+      this.view.ui.padding = { top: 80, left: 30, right: 0, bottom: 0 };
       this.view.ui.remove('zoom')
       this.view.ui.add(zoom)
       this.view.ui.add(compass)
-      this.view.ui.add(scaleBar, 'bottom-right')
-      this.view.ui.add(this.search)
+      this.view.ui.add(scaleBar, 'bottom-right');
+      this.view.ui.add(sketch, "top-left");
       let len = this.map.layers.items.length
       let queryLayer = this.map.layers.items[len - 1]
       this.view.when(function () {
@@ -259,6 +269,7 @@ class MainBox extends Component {
     }, 2000)
   }
   render() {
+    console.log(this.props)
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
@@ -271,6 +282,13 @@ class MainBox extends Component {
             {this.state.playControllerText}
           </Button>
         </div>
+        <YearSelector data={this.props.yearArea} />
+        <Search
+          year={this.props.years}
+          event={this.props.events}
+          people={this.props.charProfiles}
+          onChange={i => console.log(i)}
+        />
         <Slider
           years={this.props.years}
           value={this.state.sliderValue}

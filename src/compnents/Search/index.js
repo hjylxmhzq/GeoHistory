@@ -1,0 +1,1 @@
+export { Complete as default } from './Search';

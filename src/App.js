@@ -26,6 +26,7 @@ class App extends Component {
       years: [],
       events: [],
       experience: [],
+      yearArea: [],
       curDrawing: 0,
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
@@ -40,13 +41,15 @@ class App extends Component {
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
     const eventData = fetch(staticPath + 'json/event.json').then(res => res.json())
     const experienceData = fetch(staticPath + 'json/experience.json').then(res => res.json())
-    Promise.all([yearData, profileData, eventData, experienceData]).then((dataList) => {
+    const yearArea = fetch(staticPath + 'json/area.json').then(res => res.json())
+    Promise.all([yearData, profileData, eventData, experienceData, yearArea]).then((dataList) => {
       console.log(dataList)
       this.setState({
         years: dataList[0],
         charProfiles: dataList[1],
         events: dataList[2],
-        experience: dataList[3]
+        experience: dataList[3],
+        yearArea: dataList[4]
       })
     }).catch((err) => {
       console.error(err);
@@ -70,6 +73,7 @@ class App extends Component {
               years={this.state.years}
               charProfiles={this.state.charProfiles}
               events={this.state.events}
+              yearArea={this.state.yearArea}
               yearSelected={this.state.yearSelectedKeys[0]}
               charSelected={this.state.charSelectedKeys[0]}
               eventSelected={this.state.eventSelectedKeys[0]}

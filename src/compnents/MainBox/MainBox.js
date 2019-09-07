@@ -287,7 +287,6 @@ class MainBox extends Component {
           year={this.props.years}
           event={this.props.events}
           people={this.props.charProfiles}
-          onChange={i => console.log(i)}
         />
         <Slider
           years={this.props.years}

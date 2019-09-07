@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
+import { Popover } from 'antd';
 
 const { SubMenu } = Menu;
 
@@ -9,6 +10,7 @@ class LeftSider extends Component {
     super()
     this.state = {
       collapsed: false,
+      yearLabel: undefined,
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: [],
@@ -23,9 +25,14 @@ class LeftSider extends Component {
   };
 
   handleSelectChange(e) {
-    if (e.keyPath[1] === 'years') {
+    console.log(e.key[0])
+    // 选择年份
+    if (e.key[0] === 'Y') {
+      
       if (!this.state.yearSelectedKeys) {
-        this.setState({ yearSelectedKeys: [e.key] })
+        let yearLabel = e.key.slice(3)
+        console.log(yearLabel)
+        this.setState({ yearSelectedKeys: [e.key],yearLabel:yearLabel})
       }
       else if (this.state.yearSelectedKeys[0] === e.key) {
         this.setState({ yearSelectedKeys: [] })
@@ -34,6 +41,7 @@ class LeftSider extends Component {
         this.setState({ yearSelectedKeys: [e.key] })
       }
     }
+    // 选择人物
     if (e.keyPath[1] === 'characters') {
       if (!this.state.charSelectedKeys) {
         this.setState({ charSelectedKeys: [e.key] })
@@ -90,7 +98,7 @@ class LeftSider extends Component {
   render() {
 
     const years = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
           ((years) => {
             const yearList = [];
@@ -106,8 +114,9 @@ class LeftSider extends Component {
         }
       </Menu>
     );
+    console.log(this.props.years)
     const events = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
@@ -120,7 +129,7 @@ class LeftSider extends Component {
       </Menu>
     );
     const people = (
-      <Menu style={{ maxHeight: 500, overflowY: 'scroll' }}>
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.charProfiles[this.state.currentYear[0]] &&
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
@@ -134,6 +143,11 @@ class LeftSider extends Component {
     );
     return (
       <div className={s.selectors}>
+        <div>
+          <Popover placement="right" content={years} trigger="click">
+            <Button>Right</Button>
+          </Popover>
+        </div>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>

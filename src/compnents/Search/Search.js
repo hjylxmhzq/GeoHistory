@@ -83,7 +83,6 @@ export class Complete extends Component {
                     ))}
                 </OptGroup>
             ))
-        console.log(dataSource)
 
         this.setState({
             dataSource: options

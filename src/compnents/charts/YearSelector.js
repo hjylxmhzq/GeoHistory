@@ -26,9 +26,12 @@ class YearSelector extends Component {
                 })
             },
             yAxis: {
+                show: true,
                 splitLine: {
                     show: false
-                }
+                },
+                interval: 500000000,
+                name: '面积'
             },
             dataZoom: [{
                 startValue: '2014-06-01'
@@ -46,6 +49,10 @@ class YearSelector extends Component {
                     return item[1];
                 })
             }
+        });
+        this.lineChartsInstance.on('click', 'series', e => {
+            const index = e.dataIndex;
+            this.props.onClick(index);
         });
     }
 

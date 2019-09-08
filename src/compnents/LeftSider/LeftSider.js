@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
-import { Popover } from 'antd';
 
 const { SubMenu } = Menu;
 
@@ -28,11 +27,11 @@ class LeftSider extends Component {
     console.log(e.key[0])
     // 选择年份
     if (e.key[0] === 'Y') {
-      
+
       if (!this.state.yearSelectedKeys) {
         let yearLabel = e.key.slice(3)
         console.log(yearLabel)
-        this.setState({ yearSelectedKeys: [e.key],yearLabel:yearLabel})
+        this.setState({ yearSelectedKeys: [e.key], yearLabel: yearLabel })
       }
       else if (this.state.yearSelectedKeys[0] === e.key) {
         this.setState({ yearSelectedKeys: [] })
@@ -87,10 +86,10 @@ class LeftSider extends Component {
     }
   }
   handleEventSelect(eventName) {
-    this.setState({currentEvent: eventName});
+    this.setState({ currentEvent: eventName });
   }
   handlePeopleSelect(name) {
-    this.setState({currentPeople: name});
+    this.setState({ currentPeople: name });
   }
   handleYearSelect(dynasty, year) {
     this.setState({ currentYear: [dynasty, year] });
@@ -104,8 +103,8 @@ class LeftSider extends Component {
             const yearList = [];
             for (let name of Object.keys(years)) {
               yearList.push(
-                <SubMenu title={name} >
-                  {years[name].map(year => <Menu.Item onClick={this.handleYearSelect.bind(this, name, year.Year)}>{year.Year}</Menu.Item>)}
+                <SubMenu title={name} key={name}>
+                  {years[name].map(year => <Menu.Item key={name + year.Year} onClick={this.handleYearSelect.bind(this, name, year.Year)}>{year.Year}</Menu.Item>)}
                 </SubMenu>
               )
             }
@@ -114,13 +113,13 @@ class LeftSider extends Component {
         }
       </Menu>
     );
-    console.log(this.props.years)
     const events = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
               <Menu.Item
+                key={event.HName}
                 onClick={this.handleEventSelect.bind(this, event.HName)}>
                 {event.HName}
               </Menu.Item>
@@ -134,8 +133,23 @@ class LeftSider extends Component {
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
               <Menu.Item
-              onClick={this.handlePeopleSelect.bind(this, char.Name)}>
+                key={char.Name}
+                onClick={this.handlePeopleSelect.bind(this, char.Name)}>
                 {char.Name}
+              </Menu.Item>
+            )
+          )}
+      </Menu>
+    );
+    const tiles = (
+      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
+        {this.props.currentTile &&
+          this.props.tilesMap.map(
+            tile => (
+              <Menu.Item
+                key={tile}
+                onClick={() => { this.props.handleTileSelect(tile) }}>
+                {tile}
               </Menu.Item>
             )
           )}
@@ -143,11 +157,6 @@ class LeftSider extends Component {
     );
     return (
       <div className={s.selectors}>
-        <div>
-          <Popover placement="right" content={years} trigger="click">
-            <Button>Right</Button>
-          </Popover>
-        </div>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
@@ -161,6 +170,11 @@ class LeftSider extends Component {
         <div>
           <Dropdown overlay={events} trigger={['click']}>
             <Button>{`${this.state.currentYear[0]}: ${this.state.currentEvent || '历史事件'}`}</Button>
+          </Dropdown>
+        </div>
+        <div>
+          <Dropdown overlay={tiles} trigger={['click']}>
+            <Button>{`底图: ${this.props.currentTile || '底图'}`}</Button>
           </Dropdown>
         </div>
       </div>

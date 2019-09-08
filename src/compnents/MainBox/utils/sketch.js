@@ -1,4 +1,4 @@
-export default function createSketch(Obj, Sketch) {
+function createSketch(Obj, Sketch) {
     const sketch = new Sketch({
         view: Obj.view,
         layer: Obj.graphicsLayer2
@@ -7,17 +7,21 @@ export default function createSketch(Obj, Sketch) {
         // check if the create event's state has changed to complete indicating
         // the graphic create operation is completed.
         if (event.state === "complete") {
-            let query = Obj.currentBoundaryLayer.createQuery();
+            let query = Obj.baseBoundaryFeatureLayer.createQuery();
             Obj.selectGrphics.push(event.graphic);
             query.geometry = event.graphic.geometry;
             query.spatialRelationship = "intersects";
-            Obj.currentBoundaryLayer.queryFeatures(query).then(function (results) {
+            Obj.baseBoundaryFeatureLayer.queryFeatures(query).then(function (results) {
                 // prints an array of all the features in the service to the console
-                console.log(results)
-                let features = results.features;
-                console.log(features);
+                console.log(results.features, Obj.featureLayerView);
+                if (Obj.boundaryhighlight) {
+                    Obj.boundaryhighlight.remove();
+                }
+                Obj.boundaryhighlight = Obj.featureLayerView.highlight(results.features);
             });
         }
     });
     return sketch;
 }
+
+export { createSketch };

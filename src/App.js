@@ -11,6 +11,13 @@ import Config from './config';
 
 const staticPath = Config.staticPath;
 
+const tilesMap = [
+  'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer',
+  'dark-gray',
+  'streets',
+  'hybrid'
+]
+
 const { Content } = Layout
 class App extends Component {
   constructor() {
@@ -28,12 +35,30 @@ class App extends Component {
       experience: [],
       yearArea: [],
       curDrawing: 0,
+      currentTileMap: 'topo',
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
       isCharSelectChangeToAnother: false,
       isEventSelectChangeToAnother: false,
       isYearSelectChangeToAnother: false,
     }
+  }
+
+  onSelectTileMap(currentTileMap) {
+    this.setState({ currentTileMap })
+  }
+
+  processYearArea(data) {
+    const result = [];
+    Object.keys(data).forEach(d => {
+      Object.keys(data[d][0]).forEach(d1 => {
+        result.push([
+          d + ' ' + d1,
+          data[d][0][d1]
+        ])
+      })
+    });
+    return result;
   }
 
   componentDidMount() {
@@ -49,7 +74,7 @@ class App extends Component {
         charProfiles: dataList[1],
         events: dataList[2],
         experience: dataList[3],
-        yearArea: dataList[4]
+        yearArea: this.processYearArea(dataList[4])
       })
     }).catch((err) => {
       console.error(err);
@@ -65,7 +90,12 @@ class App extends Component {
       <div className="App">
         <Header />
         <LeftSider
-          years={this.state.years} charProfiles={this.state.charProfiles} events={this.state.events}
+          years={this.state.years}
+          charProfiles={this.state.charProfiles}
+          events={this.state.events}
+          tilesMap={tilesMap}
+          handleTileSelect={this.onSelectTileMap.bind(this)}
+          currentTile={this.state.currentTileMap}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>

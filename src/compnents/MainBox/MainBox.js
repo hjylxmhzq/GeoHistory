@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
-import Slider from '../Slider/Slider';
-import createSketch from './utils/sketch';
+import { createSketch, renderer } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
@@ -16,7 +15,9 @@ class MainBox extends Component {
     this.tangFeatureLayers = []
     this.dojoUrl = config.dojoServer;
     this.tileMapUrl = "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer"
-    this.baseFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
+    this.baseBoundaryFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
+    this.baseEventFeatureUrl = config.gisRestServer + "events_point/MapServer";
+    this.basePeopleFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
     this.highlightSelectChar = []
     this.state = {
       isPlay: false,
@@ -26,9 +27,14 @@ class MainBox extends Component {
     this.playTimer = null;
     this.stopUpdate = true;
     this.selectGrphics = [];
+    this.changeBaseMap = () => {};
   }
   componentDidMount() {
     this.initMap()
+  }
+
+  componentDidUpdate() {
+    // this.changeBaseMap(this.props.currentTile);
   }
 
   interpolation(pointA, pointB, speed) {
@@ -159,28 +165,59 @@ class MainBox extends Component {
     ], this.dojoUrl).then(([GraphicsLayer, Sketch, Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
       this.FeatureLayer = FeatureLayer;
       this.graphicsLayer2 = new GraphicsLayer();
-      this.currentBoundaryLayer = new FeatureLayer({
-        url: this.baseFeatureUrl,
+      this.baseBoundaryFeatureLayer = new FeatureLayer({
+        url: this.baseBoundaryFeatureUrl,
+        id: '0',
+        visible: true,
+        renderer
+      })
+      this.baseEventFeatureLayer = new FeatureLayer({
+        url: this.baseEventFeatureUrl,
+        id: '3',
+        visible: true,
+      })
+      this.basePeopleFeatureLayer = new FeatureLayer({
+        url: this.basePeopleFeatureUrl,
         id: '0',
         visible: true,
       })
 
+      this.changeBaseMap = (tileMapUrl) => {
+        let tileLayer = new TileLayer({
+          url: tileMapUrl
+        });
+        let baseMap = new Basemap({
+          baseLayers: [tileLayer],
+          id: 'myBaseMap'
+        });
+        if (this.map) {
+          this.map.basemap = baseMap;
+        }
+      }
+
       let tileLayer = new TileLayer({
         url: this.tileMapUrl
       });
-      let baseMap = new Basemap({
+      let basemap = new Basemap({
         baseLayers: [tileLayer],
         id: 'myBaseMap'
       });
       this.map = new Map({
-        basemap: baseMap,
-        layers: this.currentBoundaryLayer
+        basemap,
+        layers: [
+          // this.baseEventFeatureLayer,
+          this.basePeopleFeatureLayer,
+          this.baseBoundaryFeatureLayer,
+        ]
       });
       this.view = new MapView({
         center: [115, 32.1],
         map: this.map,
         container: "mapDiv",
         zoom: 5
+      });
+      this.view.whenLayerView(this.baseBoundaryFeatureLayer).then((layerView) => {
+        this.featureLayerView = layerView;
       });
       this.graphic = new Graphic()
       let zoom = new Zoom({
@@ -193,11 +230,6 @@ class MainBox extends Component {
       let scaleBar = new ScaleBar({
         view: this.view,
         unit: 'metric'
-      })
-      this.search = new Search({
-        view: this.view,
-        allPlaceholder: '找点什么',
-        includeDefaultSources: false,
       })
       const sketch = createSketch(this, Sketch);
       this.view.graphics.add(this.graphic)
@@ -223,8 +255,9 @@ class MainBox extends Component {
       return 0;
     }
     this.map.layers = new this.FeatureLayer({
-      url: this.baseFeatureUrl + index,
+      url: this.baseBoundaryFeatureUrl + index,
       visible: true,
+      renderer
     })
   }
 
@@ -282,17 +315,17 @@ class MainBox extends Component {
             {this.state.playControllerText}
           </Button>
         </div>
-        <YearSelector data={this.props.yearArea} />
+        <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
         <Search
           year={this.props.years}
           event={this.props.events}
           people={this.props.charProfiles}
         />
-        <Slider
+        {/* <Slider
           years={this.props.years}
           value={this.state.sliderValue}
           onChange={this.handleSliderChange.bind(this)}
-        />
+        /> */}
       </>
     )
   }

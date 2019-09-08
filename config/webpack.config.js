@@ -114,6 +114,9 @@ module.exports = function (webpackEnv) {
         loader: require.resolve(preProcessor),
         options: {
           sourceMap: isEnvProduction && shouldUseSourceMap,
+          ...(preProcessor === 'less-loader' ? {
+            javascriptEnabled: true
+          } : {})
         },
       });
     }

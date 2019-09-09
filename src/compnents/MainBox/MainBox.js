@@ -6,6 +6,8 @@ import { createSketch, renderer } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
+import { searchKey } from './utils/timeMap';
+import { RightDrawer } from '../Drawer/Common';
 
 const BOUNDARY_LAYER_NUM = 121;
 
@@ -22,94 +24,25 @@ class MainBox extends Component {
     this.state = {
       isPlay: false,
       playControllerText: '播放边界变化',
-      sliderValue: 0
+      sliderValue: 0,
+      selectedBoundary: [],
+      rightDrawShow: false
     }
     this.playTimer = null;
     this.stopUpdate = true;
     this.selectGrphics = [];
-    this.changeBaseMap = () => {};
+    this.changeBaseMap = () => { };
   }
   componentDidMount() {
     this.initMap()
   }
 
-  componentDidUpdate() {
-    // this.changeBaseMap(this.props.currentTile);
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.selectedBoundary !== this.state.selectedBoundary) {
+      this.setState({ rightDrawShow: true });
+    }
   }
 
-  interpolation(pointA, pointB, speed) {
-    var tmp = [];
-    if (speed === undefined) {
-      speed = 1;
-    }
-    var count = Math.abs(speed) * 25;
-    var disX = (pointB.x - pointA.x) / count;
-    var disY = (pointB.y - pointA.y) / count;
-    var i = 0;
-    while (i <= count) {
-      var p = pointA.clone()
-      p.x = pointA.x + i * disX;
-      p.y = pointA.y + i * disY;
-
-      tmp.push(p);
-      i++;
-    }
-    tmp.push(pointB);//防止插值出来的最后一个点到不了B点
-    return tmp;
-  }
-  drawLine(feature, layerView) {
-    this.traj = []
-    for (let i = 0; i < feature.length - 1; i++) {
-      this.traj.push(this.interpolation(feature[i].geometry, feature[i + 1].geometry))
-    }
-    var polyline = {
-      type: 'polyline',
-      paths: []
-    }
-    var lineSymbol = {
-      type: "simple-line", // autocasts as SimpleLineSymbol()
-      color: [226, 119, 40],
-      width: 1.5
-    };
-
-    this.graphic.symbol = lineSymbol
-
-    for (let i = 0; i < this.traj.length; i++) {
-      for (let j = 0; j < this.traj[i].length - 1; j++) {
-        polyline.paths.push([this.traj[i][j].x, this.traj[i][j].y])
-      }
-    }
-    let nPolyline = {
-      type: 'polyline',
-      paths: []
-    };
-    let cnt = 0
-    let draw = () => {
-      if (this.props.isShowChar && this.props.charSelected) {
-        if (polyline.paths.length > 0) {
-          this.t = setTimeout(() => {
-            let tmp = polyline.paths.shift()
-            nPolyline.paths.push(tmp);
-            if (tmp[0] === feature[cnt].geometry.x && tmp[1] === feature[cnt].geometry.y) {
-              if (this.props.curDrawingPoint) this.props.curDrawingPoint(cnt)
-              this.highlightSelectChar.push(layerView.highlight(
-                feature[cnt++].attributes['FID']))
-            }
-            this.graphic.geometry = nPolyline;
-
-            this.view.goTo({ center: [tmp[0] + 3, tmp[1]], zoom: 6 }, { duration: 500, easing: 'in-out-expo' })
-            draw();
-          }, 100)
-        } else {
-          clearTimeout(this.t)
-        }
-      } else {
-        clearTimeout(this.t)
-        this.graphic.geometry = undefined
-      }
-    }
-    draw()
-  }
   queryForChar() {
     let charLayer = this.map.layers.items[14]
     this.view.whenLayerView(charLayer).then((layerView) => {
@@ -173,7 +106,7 @@ class MainBox extends Component {
       })
       this.baseEventFeatureLayer = new FeatureLayer({
         url: this.baseEventFeatureUrl,
-        id: '3',
+        id: '4',
         visible: true,
       })
       this.basePeopleFeatureLayer = new FeatureLayer({
@@ -205,8 +138,8 @@ class MainBox extends Component {
       this.map = new Map({
         basemap,
         layers: [
-          // this.baseEventFeatureLayer,
-          this.basePeopleFeatureLayer,
+          this.baseEventFeatureLayer,
+          // this.basePeopleFeatureLayer,
           this.baseBoundaryFeatureLayer,
         ]
       });
@@ -254,11 +187,17 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
-    this.map.layers = new this.FeatureLayer({
+    const boundaryLayer = new this.FeatureLayer({
       url: this.baseBoundaryFeatureUrl + index,
       visible: true,
       renderer
+    });
+    const evnetLayerIndex = searchKey(index);
+    const eventLayer = new this.FeatureLayer({
+      url: this.baseEventFeatureUrl + '/' + evnetLayerIndex,
+      visible: true,
     })
+    this.map.layers = [boundaryLayer, eventLayer];
   }
 
   handleSliderChange(value) {
@@ -316,6 +255,16 @@ class MainBox extends Component {
           </Button>
         </div>
         <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
+        <RightDrawer
+          isShow={this.state.rightDrawShow}
+          onClose={() => this.setState({ rightDrawShow: false })}
+          data={{
+            years: this.props.years,
+            charProfiles: this.props.charProfiles,
+            events: this.props.events,
+            selectedBoundary: this.state.selectedBoundary
+          }}
+        />
         <Search
           year={this.props.years}
           event={this.props.events}

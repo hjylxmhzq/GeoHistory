@@ -13,11 +13,18 @@ function createSketch(Obj, Sketch) {
             query.spatialRelationship = "intersects";
             Obj.baseBoundaryFeatureLayer.queryFeatures(query).then(function (results) {
                 // prints an array of all the features in the service to the console
-                console.log(results.features, Obj.featureLayerView);
+                console.log(results);
                 if (Obj.boundaryhighlight) {
                     Obj.boundaryhighlight.remove();
                 }
                 Obj.boundaryhighlight = Obj.featureLayerView.highlight(results.features);
+                const selectedBoundary = [];
+                if (results.features.length) {
+                    for (let feature of results.features) {
+                        selectedBoundary.push(feature.attributes);
+                    }
+                    Obj.setState({selectedBoundary});
+                }
             });
         }
     });

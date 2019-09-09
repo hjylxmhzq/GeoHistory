@@ -43,11 +43,12 @@ class YearSelector extends Component {
                 right: 10,
             },
             series: {
-                name: 'Beijing AQI',
+                name: '疆域面积',
                 type: 'line',
                 data: data.map(function (item) {
                     return item[1];
-                })
+                }),
+                areaStyle: {}
             }
         });
         this.lineChartsInstance.on('click', 'series', e => {

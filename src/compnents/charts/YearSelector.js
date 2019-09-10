@@ -71,7 +71,7 @@ class YearSelector extends Component {
 
     render() {
         return (
-            <div className={s.charts}>
+            <div style={this.props.style} className={s.charts}>
                 <div  ref={this.charts}></div>
             </div>
         )

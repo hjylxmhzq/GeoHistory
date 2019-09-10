@@ -8,6 +8,7 @@ import Search from '../Search';
 import config from '../../config';
 import { searchKey } from './utils/timeMap';
 import { RightDrawer } from '../Drawer/Common';
+import { YearModal } from '../YearModal/YearModal';
 
 const BOUNDARY_LAYER_NUM = 121;
 
@@ -26,7 +27,8 @@ class MainBox extends Component {
       playControllerText: '播放边界变化',
       sliderValue: 0,
       selectedBoundary: [],
-      rightDrawShow: false
+      rightDrawShow: false,
+      showYearModal: false
     }
     this.playTimer = null;
     this.stopUpdate = true;
@@ -200,6 +202,10 @@ class MainBox extends Component {
     this.map.layers = [boundaryLayer, eventLayer];
   }
 
+  openYearModal() {
+    this.setState({ yearModal: true });
+  }
+
   handleSliderChange(value) {
     if (!this.map) {
       return 0;
@@ -255,6 +261,20 @@ class MainBox extends Component {
           </Button>
         </div>
         <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
+        <Button
+          style={{ position: 'absolute', right: 70, bottom: 80 }}
+          onClick={this.openYearModal.bind(this)}
+        >年代变化</Button>
+        <YearModal
+          visible={this.state.yearModal}
+          handleCancel={() => this.setState({yearModal: false})}
+          handleOk={() => this.setState({yearModal: false})}
+        >
+          <YearSelector
+            style={{position: 'relative', left: 0, right: 0, bottom: 0}}
+            onClick={this.changeBoundaryLayer.bind(this)}
+            data={this.props.yearArea} />
+        </YearModal>
         <RightDrawer
           isShow={this.state.rightDrawShow}
           onClose={() => this.setState({ rightDrawShow: false })}

@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
-import { createSketch, renderer } from './utils';
+import { createSketch, renderer, heatMapRenderer } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
-import { searchKey } from './utils/timeMap';
+import { searchKey, searchName } from './utils/timeMap';
 import { RightDrawer } from '../Drawer/Common';
 import { YearModal } from '../YearModal/YearModal';
+import { eventPopUpTemplate } from './utils/popUpTemplate';
 
 const BOUNDARY_LAYER_NUM = 121;
 
@@ -40,7 +41,9 @@ class MainBox extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.changeBoundaryLayer(this.props.currentYear);
+    if (prevProps.currentYear !== this.props.currentYear) {
+      this.changeBoundaryLayer(this.props.currentYear);
+    }
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
       this.setState({ rightDrawShow: true });
     }
@@ -111,11 +114,14 @@ class MainBox extends Component {
         url: this.baseEventFeatureUrl,
         id: '4',
         visible: true,
+        popupTemplate: eventPopUpTemplate,
+        heatMapRenderer
       })
       this.basePeopleFeatureLayer = new FeatureLayer({
         url: this.basePeopleFeatureUrl,
         id: '0',
         visible: true,
+        heatMapRenderer
       })
 
       this.changeBaseMap = (tileMapUrl) => {
@@ -141,6 +147,7 @@ class MainBox extends Component {
       this.map = new Map({
         basemap,
         layers: [
+          this.graphicsLayer2,
           this.baseEventFeatureLayer,
           // this.basePeopleFeatureLayer,
           this.baseBoundaryFeatureLayer,
@@ -190,6 +197,7 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
+    console.log(this.baseBoundaryFeatureUrl + index)
     const boundaryLayer = new this.FeatureLayer({
       url: this.baseBoundaryFeatureUrl + index,
       visible: true,
@@ -199,8 +207,10 @@ class MainBox extends Component {
     const eventLayer = new this.FeatureLayer({
       url: this.baseEventFeatureUrl + '/' + evnetLayerIndex,
       visible: true,
+      heatMapRenderer,
+      popupTemplate: eventPopUpTemplate,
     })
-    this.map.layers = [boundaryLayer, eventLayer];
+    this.map.layers = [this.graphicsLayer2, eventLayer, boundaryLayer];
   }
 
   openYearModal() {
@@ -268,12 +278,17 @@ class MainBox extends Component {
         >年代变化</Button>
         <YearModal
           visible={this.state.yearModal}
-          handleCancel={() => this.setState({yearModal: false})}
-          handleOk={() => this.setState({yearModal: false})}
+          handleCancel={() => this.setState({ yearModal: false })}
+          handleOk={() => this.setState({ yearModal: false })}
         >
+          <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
+          {
+            this.state.showWiki &&
+            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.props.currentYear)) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
+          }
           <YearSelector
-            style={{position: 'relative', left: 0, right: 0, bottom: 0}}
-            onClick={this.changeBoundaryLayer.bind(this)}
+            style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
+            onClick={this.props.onSelectYear}
             data={this.props.yearArea} />
         </YearModal>
         <RightDrawer
@@ -286,6 +301,15 @@ class MainBox extends Component {
             selectedBoundary: this.state.selectedBoundary
           }}
         />
+        {
+          !this.state.rightDrawShow &&
+          <Button
+            style={{ position: 'absolute', right: 0, bottom: 3, height: '99%', width: 15, padding: 0 }}
+            onClick={() => this.setState({ rightDrawShow: true })}
+          >
+            &lt;
+        </Button>
+        }
         <Search
           year={this.props.years}
           event={this.props.events}

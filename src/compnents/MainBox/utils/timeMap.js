@@ -20,11 +20,43 @@ export const timeMap = {
     18: [128, 134]
 }
 
+export const nameMap = {
+    '夏': [0, 1],
+    '商': [1, 2],
+    '周': [2, 5],
+    '春秋': [5, 10],
+    '战国': [10, 15],
+    '秦': [15, 19],
+    '汉': [19, 38],
+    '三国': [38, 41],
+    '晋': [41, 47],
+    '十六国': [47, 51],
+    '南北': [51, 61],
+    '隋': [61, 69],
+    '唐': [69, 82],
+    '五代十国': [82, 91],
+    '宋': [91, 103],
+    '元': [103, 111],
+    '民': [111, 117],
+    '清': [117, 128],
+    '民国': [128, 134]
+}
+
 export function searchKey(dy) {
     let result = 0;
     Object.keys(timeMap).forEach(i => {
         if (timeMap[i][1] > dy && timeMap[i][0] <= dy) {
-            result = parseInt(i)
+            result = parseInt(i);
+        }
+    })
+    return result;
+}
+
+export function searchName(dy) {
+    let result = 0;
+    Object.keys(nameMap).forEach(i => {
+        if (nameMap[i][1] > dy && nameMap[i][0] <= dy) {
+            result = i;
         }
     })
     return result;

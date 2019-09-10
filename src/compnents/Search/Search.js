@@ -18,35 +18,45 @@ export class Complete extends Component {
             return null;
         }
         const year = [];
+        let exist = [];
         Object.keys(this.props.year).forEach(y => {
             this.props.year[y].forEach(c => {
                 if (c.Year.includes(value)) {
-                    year.push({
-                        title: y,
-                        content: y + ': ' + c.Year
-                    })
+                    if (exist.indexOf(y + ': ' + c.Year) === -1) {
+                        year.push({
+                            title: y,
+                            content: y + ': ' + c.Year
+                        })
+                        exist.push(y + ': ' + c.Year)
+                    }
                 }
             })
         });
         const event = [];
+        exist = [];
         Object.keys(this.props.event).forEach(y => {
             this.props.event[y].forEach(c => {
                 if (c.HName.includes(value)) {
-                    event.push({
-                        title: y,
-                        content: y + ': ' + c.HName
-                    })
+                    if (exist.indexOf(y + ': ' + c.HName) === -1) {
+                        event.push({
+                            title: y,
+                            content: y + ': ' + c.HName
+                        })
+                    }
                 }
             })
         });
         const people = [];
+        exist = [];
         Object.keys(this.props.people).forEach(y => {
             this.props.people[y].forEach(c => {
                 if (c.Name.includes(value)) {
-                    people.push({
-                        title: y,
-                        content: y + ': ' + c.Name
-                    })
+                    if (exist.indexOf(y + ': ' + c.Name) === -1) {
+                        people.push({
+                            title: y,
+                            content: y + ': ' + c.Name
+                        })
+                    }
                 }
             })
         });

@@ -13,7 +13,7 @@ class LeftSider extends Component {
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: [],
-      currentYear: ['Tang', ''],
+      currentYear: ['夏', ''],
       currentPeople: null,
       currentEvent: null
     };

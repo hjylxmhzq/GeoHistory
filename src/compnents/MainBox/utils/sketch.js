@@ -6,6 +6,7 @@ function createSketch(Obj, Sketch) {
     sketch.on("create", (event) => {
         // check if the create event's state has changed to complete indicating
         // the graphic create operation is completed.
+        Obj.setState({ rightDrawShow: true });
         if (event.state === "complete") {
             let query = Obj.baseBoundaryFeatureLayer.createQuery();
             Obj.selectGrphics.push(event.graphic);
@@ -23,10 +24,15 @@ function createSketch(Obj, Sketch) {
                     for (let feature of results.features) {
                         selectedBoundary.push(feature.attributes);
                     }
-                    Obj.setState({selectedBoundary});
+                    Obj.setState({ selectedBoundary });
                 }
             });
         }
+    });
+    sketch.on("update", (event) => {
+        // check if the create event's state has changed to complete indicating
+        // the graphic create operation is completed.
+        Obj.setState({ rightDrawShow: true });
     });
     return sketch;
 }

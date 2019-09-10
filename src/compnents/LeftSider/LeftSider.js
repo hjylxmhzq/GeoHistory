@@ -91,7 +91,8 @@ class LeftSider extends Component {
   handlePeopleSelect(name) {
     this.setState({ currentPeople: name });
   }
-  handleYearSelect(dynasty, year) {
+  handleYearSelect(dynasty, year, idx) {
+    this.props.onSelectYear(idx);
     this.setState({ currentYear: [dynasty, year] });
   }
   render() {
@@ -104,7 +105,7 @@ class LeftSider extends Component {
             for (let name of Object.keys(years)) {
               yearList.push(
                 <SubMenu title={name} key={name}>
-                  {years[name].map(year => <Menu.Item key={name + year.Year} onClick={this.handleYearSelect.bind(this, name, year.Year)}>{year.Year}</Menu.Item>)}
+                  {years[name].map((year, index) => <Menu.Item key={name + year.Year + index} onClick={this.handleYearSelect.bind(this, name, year.Year, year.idx)}>{year.Year}</Menu.Item>)}
                 </SubMenu>
               )
             }

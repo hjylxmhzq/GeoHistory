@@ -40,6 +40,7 @@ class MainBox extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    this.changeBoundaryLayer(this.props.currentYear);
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
       this.setState({ rightDrawShow: true });
     }

@@ -137,11 +137,14 @@
     ]
   },
   "plugins": [
-    ["import", {
-      "libraryName": "antd",
-      "libraryDirectory": "es",
-      "style": true
-    }]
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": true
+      }
+    ]
   ],
   "devDependencies": {
     "babel-plugin-import": "^1.12.1"

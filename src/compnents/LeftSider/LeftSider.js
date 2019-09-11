@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
+import { Select } from 'antd';
 
+const { Option } = Select;
 const { SubMenu } = Menu;
 
 class LeftSider extends Component {
@@ -13,90 +15,52 @@ class LeftSider extends Component {
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: [],
-      currentYear: ['夏', ''],
+      currentYear: ['夏', '-2100年'],
       currentPeople: null,
       currentEvent: null
     };
   }
 
-  onCollapse = collapsed => {
-    this.setState({ collapsed });
-  };
 
-  handleSelectChange(e) {
-    console.log(e.key[0])
-    // 选择年份
-    if (e.key[0] === 'Y') {
-
-      if (!this.state.yearSelectedKeys) {
-        let yearLabel = e.key.slice(3)
-        console.log(yearLabel)
-        this.setState({ yearSelectedKeys: [e.key], yearLabel: yearLabel })
-      }
-      else if (this.state.yearSelectedKeys[0] === e.key) {
-        this.setState({ yearSelectedKeys: [] })
-      }
-      else {
-        this.setState({ yearSelectedKeys: [e.key] })
-      }
-    }
-    // 选择人物
-    if (e.keyPath[1] === 'characters') {
-      if (!this.state.charSelectedKeys) {
-        this.setState({ charSelectedKeys: [e.key] })
-      }
-      else if (this.state.charSelectedKeys[0] === e.key) {
-        this.setState({ charSelectedKeys: [] })
-      }
-      else {
-        this.setState({ charSelectedKeys: [e.key] })
-      }
-    }
-    if (e.keyPath[1] === 'events') {
-      if (!this.state.eventSelectedKeys) {
-        this.setState({ eventSelectedKeys: [e.key] })
-      }
-      else if (this.state.eventSelectedKeys[0] === e.key) {
-        this.setState({ eventSelectedKeys: [] })
-      }
-      else {
-        this.setState({ eventSelectedKeys: [e.key] })
-      }
-    }
-    if (this.props.onSelect) {
-      this.props.onSelect(e)
-    }
-  }
-  handleEventOpen(e) {
-    this.setState({ eventSelectedKeys: [] })
-    if (this.props.onEventOpen) {
-      this.props.onEventOpen(e)
-    }
-  }
-  handleCharOpen(e) {
-    this.setState({ charSelectedKeys: [] })
-    if (this.props.onCharOpen) {
-      this.props.onCharOpen(e)
-    }
-  }
-  handleYearOpen(e) {
-    this.setState({ yearSelectedKeys: [] })
-    if (this.props.onYearOpen) {
-      this.props.onYearOpen(e)
-    }
-  }
   handleEventSelect(eventName) {
     this.setState({ currentEvent: eventName });
   }
   handlePeopleSelect(name) {
+    if(this.props.onSelectChar) this.props.onSelectChar(name)
     this.setState({ currentPeople: name });
   }
   handleYearSelect(dynasty, year, idx) {
-    this.props.onSelectYear(idx);
-    this.setState({ currentYear: [dynasty, year] });
+    if(this.props.onSelectDynasty) {
+      let dynastyID = 0
+      switch(dynasty){
+        case '夏':dynastyID=0; break
+        case '商':dynastyID=1; break
+        case '周':dynastyID=2; break
+        case '春秋':dynastyID=3; break
+        case '战国':dynastyID=4; break
+        case '秦':dynastyID=5; break
+        case '汉':dynastyID=6; break
+        case '三国':dynastyID=7; break
+        case '晋':dynastyID=8; break
+        case '十六国':dynastyID=9; break
+        case '南北朝':dynastyID=10; break
+        case '隋':dynastyID=11; break
+        case '唐':dynastyID=12; break
+        case '五代十国':dynastyID=13; break
+        case '宋':dynastyID=14; break
+        case '元':dynastyID=15; break
+        case '明':dynastyID=16; break
+        case '清':dynastyID=17; break
+        case '民国':dynastyID=18; break
+        case '中华人民共和国':dynastyID=19; break
+      }
+      this.props.onSelectDynasty(dynastyID)
+    }
+    if(this.props.onSelectYear) this.props.onSelectYear(idx);
+    this.setState({ currentYear: [dynasty, year]});
   }
   render() {
-
+    //console.log(this.props.years)
     const years = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
@@ -115,32 +79,36 @@ class LeftSider extends Component {
       </Menu>
     );
     const events = (
-      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
+      <Select showSearch
+        onChange = {this.handleEventSelect.bind(this)}
+        allowClear={true}
+        placeholder={`${this.state.currentYear[0]}: 历史事件`} 
+        style={{ width:140,overflowY: 'auto' }}>
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
-              <Menu.Item
-                key={event.HName}
-                onClick={this.handleEventSelect.bind(this, event.HName)}>
+              <Option value={event.HName} key={event.HName}>
                 {event.HName}
-              </Menu.Item>
+              </Option>
             )
           )}
-      </Menu>
+      </Select>
     );
     const people = (
-      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
+      <Select showSearch
+        onChange = {this.handlePeopleSelect.bind(this)}
+        allowClear={true}
+        placeholder={`${this.state.currentYear[0]}: 历史人物`} 
+        style={{ width:140,overflowY: 'auto' }}>
         {this.props.charProfiles[this.state.currentYear[0]] &&
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
-              <Menu.Item
-                key={char.Name}
-                onClick={this.handlePeopleSelect.bind(this, char.Name)}>
+              <Option value={char.FID} key={char.FID}>
                 {char.Name}
-              </Menu.Item>
+              </Option>
             )
           )}
-      </Menu>
+      </Select>
     );
     const tiles = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
@@ -163,16 +131,8 @@ class LeftSider extends Component {
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
           </Dropdown>
         </div>
-        <div>
-          <Dropdown overlay={people} trigger={['click']}>
-            <Button>{`${this.state.currentYear[0]}: ${this.state.currentPeople || '历史人物'}`}</Button>
-          </Dropdown>
-        </div>
-        <div>
-          <Dropdown overlay={events} trigger={['click']}>
-            <Button>{`${this.state.currentYear[0]}: ${this.state.currentEvent || '历史事件'}`}</Button>
-          </Dropdown>
-        </div>
+        <div>{people}</div>
+        <div>{events}</div>
         <div>
           <Dropdown overlay={tiles} trigger={['click']}>
             <Button>{`底图: ${this.props.tilesMap[this.props.currentTile] || '底图'}`}</Button>

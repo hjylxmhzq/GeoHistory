@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
-import MainBox from './compnents/MainBox/mainBox'
+import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
 import ExpTimeline from './compnents/Timelist/ExpTimeline'
 import { Layout, Switch } from 'antd';
@@ -28,15 +28,11 @@ class App extends Component {
       yearSelectedKeys: [],
       charSelectedKeys: [],
       eventSelectedKeys: [],
-      isYearOpen: true,
-      isEventOpen: false,
-      isCharOpen: false,
       charProfiles: [],
       years: [],
       events: [],
       experience: [],
       yearArea: [],
-      curDrawing: 0,
       currentYear: 0,
       currentTileMap: 'topo',
       isCharDrawerOpen: false,
@@ -46,7 +42,9 @@ class App extends Component {
       isYearSelectChangeToAnother: false,
       Trigger: {
         heatmap: false,
-      }
+      },
+      currentChar:null,
+      currentDynasty:0
     }
   }
 
@@ -57,7 +55,10 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
-
+  onSelectDynasty(ID){
+    console.log(ID)
+    this.setState({currentDynasty:ID})
+  }
   processYearArea(data) {
     const result = [];
     Object.keys(data).forEach(d => {
@@ -84,7 +85,11 @@ class App extends Component {
     });
     return data;
   }
-
+  //handle character selection
+  onSelectChar(name){
+    console.log(name)
+    this.setState({currentChar:name})
+  }
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
@@ -121,6 +126,8 @@ class App extends Component {
           handleTileSelect={this.onSelectTileMap.bind(this)}
           currentTile={this.state.currentTileMap}
           onSelectYear={this.onSelectYear.bind(this)}
+          onSelectDynasty={this.onSelectDynasty.bind(this)}
+          onSelectChar={this.onSelectChar.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
@@ -129,14 +136,12 @@ class App extends Component {
               charProfiles={this.state.charProfiles}
               events={this.state.events}
               yearArea={this.state.yearArea}
-              yearSelected={this.state.yearSelectedKeys[0]}
-              charSelected={this.state.charSelectedKeys[0]}
-              eventSelected={this.state.eventSelectedKeys[0]}
-              curDrawingPoint={this.handleCurDrawing}
               onSelectYear={this.onSelectYear.bind(this)}
               currentYear={this.state.currentYear}
               currentTileMap={this.state.currentTileMap}
               trigger={this.state.Trigger}
+              currentDynasty={this.state.currentDynasty}
+              currentChar={this.state.currentChar}
             />
             {exp.length ? <ExpTimeline exp={exp} /> : null}
           </Content>

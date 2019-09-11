@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from 'antd';
+import { Button,Switch } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, renderer, heatMapRenderer, simpleMarkerRender } from './utils';
@@ -11,35 +11,36 @@ import { RightDrawer } from '../Drawer/Common';
 import { YearModal } from '../YearModal/YearModal';
 import { eventPopUpTemplate } from './utils/popUpTemplate';
 
+const ButtonGroup = Button.Group;
 const BOUNDARY_LAYER_NUM = 121;
 
 class MainBox extends Component {
   constructor() {
     super()
-    this.tangFeatureLayers = []
     this.dojoUrl = config.dojoServer;
     this.tileMapUrl = "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer"
     this.baseBoundaryFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
     this.baseEventFeatureUrl = config.gisRestServer + "events_point/MapServer";
-    this.basePeopleFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
-    this.highlightSelectChar = []
+    this.basePeopleFeatureUrl = config.gisRestServer + "experience/MapServer/";
     this.state = {
       isPlay: false,
       playControllerText: '播放边界变化',
       sliderValue: 0,
       selectedBoundary: [],
       rightDrawShow: false,
-      showYearModal: false
+      showYearModal: false,
+      showBoundary:true,
+      showChar:true,
+      showEvent:true
     }
     this.playTimer = null;
     this.stopUpdate = true;
     this.selectGrphics = [];
     this.changeBaseMap = () => { };
   }
-  componentDidMount() {
+  componentWillMount() {
     this.initMap()
   }
-
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.currentYear !== this.props.currentYear) {
       this.changeBoundaryLayer(this.props.currentYear);
@@ -51,44 +52,10 @@ class MainBox extends Component {
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
       this.setState({ rightDrawShow: true });
     }
+    //人物点显示
+
   }
 
-  queryForChar() {
-    let charLayer = this.map.layers.items[14]
-    this.view.whenLayerView(charLayer).then((layerView) => {
-      var queryChar = charLayer.createQuery();
-      queryChar.where = "ID=" + this.props.charSelected
-      charLayer.queryFeatures(queryChar).then((result) => {
-        if (this.highlightSelectChar.length) {
-          this.highlightSelectChar.map((highlight) => {
-            highlight.remove()
-            return void 0;
-          })
-        }
-        let feature = result.features
-        // let x = 0, y = 0
-        // for (let i = 0; i < feature.length; i++) {
-        //   x += feature[i].geometry.x
-        //   y += feature[i].geometry.y
-        // }
-        // x /= feature.length
-        // y /= feature.length
-        this.view.goTo(
-          {
-            center: [feature[0].geometry.x + 3, feature[0].geometry.y],
-            zoom: 6
-          },
-          {
-            duration: 1000,
-            easing: 'in-out-expo'
-          })
-        setTimeout(() => {
-          this.drawLine(feature, layerView)
-        }, 1000)
-        return void 0;
-      })
-    })
-  }
 
   initMap() {
     EsriLoader.loadModules([
@@ -103,9 +70,8 @@ class MainBox extends Component {
       'esri/widgets/Zoom',
       "esri/widgets/Compass",
       'esri/widgets/ScaleBar',
-      'esri/widgets/Search',
       "dojo/domReady!"
-    ], this.dojoUrl).then(([GraphicsLayer, Sketch, Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
+    ], this.dojoUrl).then(([GraphicsLayer, Sketch, Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar]) => {
       this.FeatureLayer = FeatureLayer;
       this.Basemap = Basemap;
       this.graphicsLayer2 = new GraphicsLayer();
@@ -115,19 +81,22 @@ class MainBox extends Component {
         visible: true,
         renderer
       };
-      this.baseBoundaryFeatureLayer = new FeatureLayer(this.bLyOpt);
-      this.baseEventFeatureLayer = new FeatureLayer({
+      this.evtOpt = {
         url: this.baseEventFeatureUrl,
         id: '4',
         visible: true,
         popupTemplate: eventPopUpTemplate,
         renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
-      })
+      };
+      this.baseBoundaryFeatureLayer = new FeatureLayer(this.bLyOpt);
+      this.baseEventFeatureLayer = new FeatureLayer(this.evtOpt);
+      console.log(this.evtOpt);
       this.basePeopleFeatureLayer = new FeatureLayer({
         url: this.basePeopleFeatureUrl,
         id: '0',
         visible: true,
-        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
+        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender,
+        definitionExpression : 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty),
       })
 
       this.changeBaseMap = (tileMapUrl) => {
@@ -155,7 +124,7 @@ class MainBox extends Component {
         layers: [
           this.graphicsLayer2,
           this.baseEventFeatureLayer,
-          // this.basePeopleFeatureLayer,
+          this.basePeopleFeatureLayer,
           this.baseBoundaryFeatureLayer,
         ]
       });
@@ -190,12 +159,12 @@ class MainBox extends Component {
       this.view.ui.add(sketch, "top-left");
       let len = this.map.layers.items.length
       let queryLayer = this.map.layers.items[len - 1]
-      this.view.when(function () {
-        return queryLayer.when(function () {
-          let query = queryLayer.createQuery()
-          return queryLayer.queryFeatures(query)
-        })
-      })
+      // this.view.when(function () {
+      //   return queryLayer.when(function () {
+      //     let query = queryLayer.createQuery()
+      //     return queryLayer.queryFeatures(query)
+      //   })
+      // })
     })
   }
 
@@ -216,7 +185,9 @@ class MainBox extends Component {
       popupTemplate: eventPopUpTemplate,
       renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
     })
-    this.map.layers = [this.graphicsLayer2, eventLayer, boundaryLayer];
+    if(this.state.currentDynasty !== this.props.currentDynasty) 
+    {this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty)}
+    this.map.layers = [this.graphicsLayer2,eventLayer, this.basePeopleFeatureLayer,boundaryLayer];
   }
 
   openYearModal() {
@@ -263,11 +234,36 @@ class MainBox extends Component {
       return void 0;
     }, 2000)
   }
+  // handleBoundarySwitch(){
+  //   console.log('switching...')
+  //   this.setState({showBoundary:!this.state.showBoundary})
+  //   this.baseBoundaryFeatureLayer.visible = !this.state.showBoundary
+  // }
+  handleCharSwitch(){
+    this.setState({showChar:!this.state.showChar})
+    this.basePeopleFeatureLayer.visible = !this.state.showChar
+  }
+  // handleEventSwitch(){
+  //   this.setState({showEvent:!this.state.showEvent})
+  //   this.baseEventFeatureLayer.visible = !this.state.showEvent
+  // }
   render() {
-    console.log(this.props)
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
+        <div className={s['switches']}>
+          {/* <Switch defaultChecked onChange={this.handleBoundarySwitch.bind(this)}>边界</Switch> */}
+          <Switch defaultChecked onChange={this.handleCharSwitch.bind(this)}>人物</Switch>
+          {/* <Switch defaultChecked onChange={this.handleEventSwitch.bind(this)}>事件</Switch> */}
+        </div>
+        <div className={s['traj_set']}>
+          <Button ghost icon={'caret-right'}>{'显示轨迹'}</Button>
+          <ButtonGroup>
+            <Button ghost icon={'step-backward'}></Button>
+            <Button ghost>{"×1.0"}</Button>
+            <Button ghost icon={'step-forward'}></Button>
+          </ButtonGroup>
+        </div>
         <div className={s['play_button']}>
           <Button
             onClick={this.handleLayerPlay.bind(this)}
@@ -280,8 +276,7 @@ class MainBox extends Component {
         <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
         <Button
           style={{ position: 'absolute', right: 70, bottom: 80 }}
-          onClick={this.openYearModal.bind(this)}
-        >年代变化</Button>
+          onClick={this.openYearModal.bind(this)}>年代变化</Button>
         <YearModal
           visible={this.state.yearModal}
           handleCancel={() => this.setState({ yearModal: false })}

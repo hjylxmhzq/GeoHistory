@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
-import { createSketch, renderer, heatMapRenderer } from './utils';
+import { createSketch, renderer, heatMapRenderer, simpleMarkerRender } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
@@ -18,7 +18,7 @@ class MainBox extends Component {
     super()
     this.tangFeatureLayers = []
     this.dojoUrl = config.dojoServer;
-    this.tileMapUrl = "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer"
+    this.tileMapUrl = "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer"
     this.baseBoundaryFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
     this.baseEventFeatureUrl = config.gisRestServer + "events_point/MapServer";
     this.basePeopleFeatureUrl = config.gisRestServer + "country_boundary/MapServer/";
@@ -43,6 +43,10 @@ class MainBox extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.currentYear !== this.props.currentYear) {
       this.changeBoundaryLayer(this.props.currentYear);
+    }
+    if (prevProps.currentTileMap !== this.props.currentTileMap) {
+      console.log(this.props.currentTileMap)
+      this.changeBaseMap(this.props.currentTileMap);
     }
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
       this.setState({ rightDrawShow: true });
@@ -103,25 +107,27 @@ class MainBox extends Component {
       "dojo/domReady!"
     ], this.dojoUrl).then(([GraphicsLayer, Sketch, Map, Basemap, TileLayer, MapView, FeatureLayer, Graphic, Zoom, Compass, ScaleBar, Search]) => {
       this.FeatureLayer = FeatureLayer;
+      this.Basemap = Basemap;
       this.graphicsLayer2 = new GraphicsLayer();
-      this.baseBoundaryFeatureLayer = new FeatureLayer({
+      this.bLyOpt = {
         url: this.baseBoundaryFeatureUrl,
         id: '0',
         visible: true,
         renderer
-      })
+      };
+      this.baseBoundaryFeatureLayer = new FeatureLayer(this.bLyOpt);
       this.baseEventFeatureLayer = new FeatureLayer({
         url: this.baseEventFeatureUrl,
         id: '4',
         visible: true,
         popupTemplate: eventPopUpTemplate,
-        heatMapRenderer
+        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
       })
       this.basePeopleFeatureLayer = new FeatureLayer({
         url: this.basePeopleFeatureUrl,
         id: '0',
         visible: true,
-        heatMapRenderer
+        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
       })
 
       this.changeBaseMap = (tileMapUrl) => {
@@ -197,7 +203,7 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
-    console.log(this.baseBoundaryFeatureUrl + index)
+    console.log(this.baseBoundaryFeatureLayer)
     const boundaryLayer = new this.FeatureLayer({
       url: this.baseBoundaryFeatureUrl + index,
       visible: true,
@@ -207,8 +213,8 @@ class MainBox extends Component {
     const eventLayer = new this.FeatureLayer({
       url: this.baseEventFeatureUrl + '/' + evnetLayerIndex,
       visible: true,
-      heatMapRenderer,
       popupTemplate: eventPopUpTemplate,
+      renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
     })
     this.map.layers = [this.graphicsLayer2, eventLayer, boundaryLayer];
   }

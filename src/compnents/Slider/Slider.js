@@ -15,7 +15,6 @@ export default function (props) {
     }
   })
   delete labels[labelsLength]; // 删掉最后一个label
-  console.log(labelsLength)
   return (
     <div className={s['slider']}>
       <Slider

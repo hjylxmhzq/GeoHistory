@@ -262,6 +262,9 @@ class MainBox extends Component {
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
+        <div className={s['traj_set']}>
+          
+        </div>
         <div className={s['play_button']}>
           <Button
             onClick={this.handleLayerPlay.bind(this)}

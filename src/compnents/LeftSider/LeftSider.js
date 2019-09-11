@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
+import { Select } from 'antd';
 
+const { Option } = Select;
 const { SubMenu } = Menu;
 
 class LeftSider extends Component {
@@ -13,87 +15,24 @@ class LeftSider extends Component {
       yearSelectedKeys: [],
       eventSelectedKeys: [],
       charSelectedKeys: [],
-      currentYear: ['夏', ''],
+      currentYear: ['夏', '-2100年'],
       currentPeople: null,
       currentEvent: null
     };
   }
 
-  onCollapse = collapsed => {
-    this.setState({ collapsed });
-  };
 
-  handleSelectChange(e) {
-    console.log(e.key[0])
-    // 选择年份
-    if (e.key[0] === 'Y') {
-
-      if (!this.state.yearSelectedKeys) {
-        let yearLabel = e.key.slice(3)
-        console.log(yearLabel)
-        this.setState({ yearSelectedKeys: [e.key], yearLabel: yearLabel })
-      }
-      else if (this.state.yearSelectedKeys[0] === e.key) {
-        this.setState({ yearSelectedKeys: [] })
-      }
-      else {
-        this.setState({ yearSelectedKeys: [e.key] })
-      }
-    }
-    // 选择人物
-    if (e.keyPath[1] === 'characters') {
-      if (!this.state.charSelectedKeys) {
-        this.setState({ charSelectedKeys: [e.key] })
-      }
-      else if (this.state.charSelectedKeys[0] === e.key) {
-        this.setState({ charSelectedKeys: [] })
-      }
-      else {
-        this.setState({ charSelectedKeys: [e.key] })
-      }
-    }
-    if (e.keyPath[1] === 'events') {
-      if (!this.state.eventSelectedKeys) {
-        this.setState({ eventSelectedKeys: [e.key] })
-      }
-      else if (this.state.eventSelectedKeys[0] === e.key) {
-        this.setState({ eventSelectedKeys: [] })
-      }
-      else {
-        this.setState({ eventSelectedKeys: [e.key] })
-      }
-    }
-    if (this.props.onSelect) {
-      this.props.onSelect(e)
-    }
-  }
-  handleEventOpen(e) {
-    this.setState({ eventSelectedKeys: [] })
-    if (this.props.onEventOpen) {
-      this.props.onEventOpen(e)
-    }
-  }
-  handleCharOpen(e) {
-    this.setState({ charSelectedKeys: [] })
-    if (this.props.onCharOpen) {
-      this.props.onCharOpen(e)
-    }
-  }
-  handleYearOpen(e) {
-    this.setState({ yearSelectedKeys: [] })
-    if (this.props.onYearOpen) {
-      this.props.onYearOpen(e)
-    }
-  }
   handleEventSelect(eventName) {
+    console.log(eventName)
     this.setState({ currentEvent: eventName });
   }
   handlePeopleSelect(name) {
+    console.log(name)
     this.setState({ currentPeople: name });
   }
   handleYearSelect(dynasty, year, idx) {
     this.props.onSelectYear(idx);
-    this.setState({ currentYear: [dynasty, year] });
+    this.setState({ currentYear: [dynasty, year],currentPeople:null,currentEvent:null});
   }
   render() {
 
@@ -115,32 +54,36 @@ class LeftSider extends Component {
       </Menu>
     );
     const events = (
-      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
+      <Select showSearch
+        onChange = {this.handleEventSelect.bind(this)}
+        allowClear={true}
+        placeholder={`${this.state.currentYear[0]}: 历史事件`} 
+        style={{ width:140,overflowY: 'auto' }}>
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
-              <Menu.Item
-                key={event.HName}
-                onClick={this.handleEventSelect.bind(this, event.HName)}>
+              <Option value={event.HName}>
                 {event.HName}
-              </Menu.Item>
+              </Option>
             )
           )}
-      </Menu>
+      </Select>
     );
     const people = (
-      <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
+      <Select showSearch
+        onChange = {this.handlePeopleSelect.bind(this)}
+        allowClear={true}
+        placeholder={`${this.state.currentYear[0]}: 历史人物`} 
+        style={{ width:140,overflowY: 'auto' }}>
         {this.props.charProfiles[this.state.currentYear[0]] &&
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
-              <Menu.Item
-                key={char.Name}
-                onClick={this.handlePeopleSelect.bind(this, char.Name)}>
+              <Option value={char.Name}>
                 {char.Name}
-              </Menu.Item>
+              </Option>
             )
           )}
-      </Menu>
+      </Select>
     );
     const tiles = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
@@ -164,14 +107,10 @@ class LeftSider extends Component {
           </Dropdown>
         </div>
         <div>
-          <Dropdown overlay={people} trigger={['click']}>
-            <Button>{`${this.state.currentYear[0]}: ${this.state.currentPeople || '历史人物'}`}</Button>
-          </Dropdown>
+          {people}
         </div>
         <div>
-          <Dropdown overlay={events} trigger={['click']}>
-            <Button>{`${this.state.currentYear[0]}: ${this.state.currentEvent || '历史事件'}`}</Button>
-          </Dropdown>
+          {events}
         </div>
         <div>
           <Dropdown overlay={tiles} trigger={['click']}>

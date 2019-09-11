@@ -35,7 +35,8 @@ class App extends Component {
       currentTileMap: 'topo',
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
-      currentChar:null
+      currentChar:null,
+      currentDynasty:0
     }
   }
 
@@ -46,7 +47,10 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
-
+  onSelectDynasty(ID){
+    console.log(ID)
+    this.setState({currentDynasty:ID})
+  }
   processYearArea(data) {
     const result = [];
     Object.keys(data).forEach(d => {
@@ -114,6 +118,7 @@ class App extends Component {
           handleTileSelect={this.onSelectTileMap.bind(this)}
           currentTile={this.state.currentTileMap}
           onSelectYear={this.onSelectYear.bind(this)}
+          onSelectDynasty={this.onSelectDynasty.bind(this)}
           onSelectChar={this.onSelectChar.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
@@ -125,6 +130,7 @@ class App extends Component {
               yearArea={this.state.yearArea}
               onSelectYear={this.onSelectYear.bind(this)}
               currentYear={this.state.currentYear}
+              currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
             />
             {exp.length ? <ExpTimeline exp={exp} /> : null}

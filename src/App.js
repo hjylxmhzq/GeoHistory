@@ -35,8 +35,8 @@ class App extends Component {
       currentTileMap: 'topo',
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
-      currentChar:null,
-      currentDynasty:0
+      currentChar:undefined,
+      currentDynasty:0,
     }
   }
 
@@ -48,7 +48,6 @@ class App extends Component {
     this.setState({ currentTileMap })
   }
   onSelectDynasty(ID){
-    console.log(ID)
     this.setState({currentDynasty:ID})
   }
   processYearArea(data) {
@@ -78,9 +77,8 @@ class App extends Component {
     return data;
   }
   //handle character selection
-  onSelectChar(name){
-    console.log(name)
-    this.setState({currentChar:name})
+  onSelectChar(FID){
+    this.setState({currentChar:FID})
   }
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())

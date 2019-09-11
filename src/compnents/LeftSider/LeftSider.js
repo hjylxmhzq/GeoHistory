@@ -25,9 +25,9 @@ class LeftSider extends Component {
   handleEventSelect(eventName) {
     this.setState({ currentEvent: eventName });
   }
-  handlePeopleSelect(name) {
-    if(this.props.onSelectChar) this.props.onSelectChar(name)
-    this.setState({ currentPeople: name });
+  handlePeopleSelect(FID) {
+    if(this.props.onSelectChar) this.props.onSelectChar(FID)
+    this.setState({ currentPeople: FID });
   }
   handleYearSelect(dynasty, year, idx) {
     if(this.props.onSelectDynasty) {

@@ -29,19 +29,26 @@ class MainBox extends Component {
       selectedBoundary: [],
       rightDrawShow: false,
       showYearModal: false,
-      showBoundary:true,
       showChar:true,
-      showEvent:true
+      //
+      showTraj:0,
+      bntLabel:'显示轨迹',
+      speedChange:false,
+      speed:101,
+      charSwitchDisable:false,
+      charSwitchLoading:false
     }
     this.playTimer = null;
     this.stopUpdate = true;
     this.selectGrphics = [];
     this.changeBaseMap = () => { };
+    this.charHighlight = []
   }
   componentWillMount() {
     this.initMap()
   }
   componentDidUpdate(prevProps, prevState) {
+    console.log(prevProps.currentChar, this.props.currentChar)
     if (prevProps.currentYear !== this.props.currentYear) {
       this.changeBoundaryLayer(this.props.currentYear);
     }
@@ -49,9 +56,157 @@ class MainBox extends Component {
       this.setState({ rightDrawShow: true });
     }
     //人物点显示
-
+    if(!this.state.showChar){
+      if(this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if(this.state.showTraj>0)this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+      if(this.graphic) this.graphic.geometry = undefined
+      if(this.polyline) this.polyline.paths = []
+      return
+    }
+    if(prevProps.currentChar>=0&&this.props.currentChar===undefined){
+      if(this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if(this.state.showTraj>0)this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+      if(this.graphic) this.graphic.geometry = undefined
+      if(this.polyline) this.polyline.paths = []
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+this.props.currentDynasty
+    }else if(prevProps.currentChar>=0&&this.props.currentChar>=0&&prevProps.currentChar!==this.props.currentChar){
+      if(this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if(this.state.showTraj>0)this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+      if(this.graphic) this.graphic.geometry = undefined
+      if(this.polyline) this.polyline.paths = []
+      if(this.view) this.loadingPath()
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
+    }else if(prevProps.currentChar || this.props.currentChar){
+      if(this.basePeopleFeatureLayer && prevProps.currentChar!==this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
+      if(this.state.showTraj===0){
+        console.log('loading...')
+        if(this.t) {
+          clearInterval(this.t)
+          this.t = null
+        }
+        
+        if(this.polyline) this.polyline.paths = []
+        if(this.view) this.loadingPath()
+      }else if(this.state.showTraj%2!==0){
+        console.log('showing trajectory...')
+        if(this.state.speedChange){
+          if(this.t) {
+            clearInterval(this.t)
+            this.t = null
+          }
+        }
+        if(this.traj && this.traj.length>0) {
+          if(!this.t)this.play()
+        }
+      }else{
+        console.log('pausing...')
+        if(this.t) {
+          clearInterval(this.t)
+          this.t = null
+        }
+      }
+    }else{
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+this.props.currentDynasty
+    }
   }
 
+  play(){
+    //this.view.goTo({center:this.traj[0],zoom:6},{duration:500,easing:'in-out-expo'})
+    this.t = setInterval(() => {
+        if(this.traj.length>0) {
+          let tmp =  this.traj.shift()
+          //console.log(tmp)
+          //this.view.goTo({center:tmp,zoom:6},{duration:1000,easing:'in-out-expo'})
+          this.polyline.paths.push(tmp)
+          this.graphic.geometry = this.polyline
+          let highlightIdx = this.nodeIdx.shift()
+          if(this.polyline.paths.length===highlightIdx){
+            
+            if(this.charHighlight.length)this.charHighlight.shift().remove()
+            this.view.whenLayerView(this.basePeopleFeatureLayer).then((layerView)=>{
+            let query = this.basePeopleFeatureLayer.createQuery();
+            query.where = 'Poet_ID='+this.props.currentChar
+            this.basePeopleFeatureLayer.queryFeatures(query).then((result)=>{
+            this.charHighlight.push(layerView.highlight(result.features.length-this.nodeIdx.length-1));
+            this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar+' and Sequence<='+(result.features.length-this.nodeIdx.length-1)
+            if(!this.traj.length){
+              setTimeout(()=>{
+                while(this.charHighlight.length) this.charHighlight.shift().remove()
+              },800)
+            }
+            //
+            })
+          });
+        }else{
+          this.nodeIdx.unshift(highlightIdx)
+        } 
+        }else{
+          clearInterval(this.t)
+          this.t=null
+          this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+        }
+    }, this.state.speed);
+  }
+  loadingPath(){
+    this.view.whenLayerView(this.basePeopleFeatureLayer).then(()=>{
+      let queryChar = this.basePeopleFeatureLayer.createQuery();
+      queryChar.where = "Poet_ID="+this.props.currentChar
+      this.basePeopleFeatureLayer.queryFeatures(queryChar).then((result)=>{
+        let feature = result.features
+        this.traj = []
+        this.cnt = 0
+        this.nodeIdx = [1]
+        for(let i=0;i<feature.length-1;i++){
+          this.traj.push.apply(this.traj,this.interpolation(feature[i].geometry,feature[i+1].geometry,i%2===0?1:-1))
+          this.nodeIdx.push(this.cnt)
+        }
+      })
+    })
+  }
+
+  interpolation(pointA, pointB,inverse){
+    //calculate center
+    let angle =(Math.PI/6 + Math.round(Math.random())/5)
+    let pointC  = {x:0,y:0}
+    if(pointA.x===pointB.x){
+      pointC.x = pointA.x+Math.abs(pointB.y-pointA.y)/2*Math.tan(angle)
+      pointC.y = pointA.y
+    }else{
+      let k = -(pointB.x-pointA.x)/(pointB.y-pointA.y)
+      let x0 = (pointA.x+pointB.x)/2
+      let y0 = (pointA.y+pointB.y)/2
+      let dist = Math.sqrt((pointA.x-pointB.x)*(pointA.x-pointB.x)+(pointA.y-pointB.y)*(pointA.y-pointB.y))/2*Math.tan(angle)
+      pointC.x = x0+dist*Math.sqrt(1/(1+k*k))
+      pointC.y = y0+dist*Math.sqrt(1/(1+k*k))*k
+    }
+    let t = 0
+    let incre = 0.1/Math.sqrt((pointA.x-pointB.x)*(pointA.x-pointB.x)+(pointA.y-pointB.y)*(pointA.y-pointB.y))
+    let pnt ={x:0,y:0}, tmpPnt1 = {x:0,y:0} , tmpPnt2 = {x:0,y:0}
+    let pntSet = []
+    while(t<=1){
+      tmpPnt1.x = (1-t)*pointA.x+t*pointC.x
+      tmpPnt1.y = (1-t)*pointA.y+t*pointC.y
+      tmpPnt2.x = (1-t)*pointC.x+t*pointB.x
+      tmpPnt2.y = (1-t)*pointC.y+t*pointB.y
+      pnt.x = (1-t)*tmpPnt1.x+t*tmpPnt2.x
+      pnt.y = (1-t)*tmpPnt1.y+t*tmpPnt2.y
+      pntSet.push([pnt.x,pnt.y])
+      this.cnt++
+      t+=incre
+    }
+    pntSet.push([pointB.x,pointB.y])
+    this.cnt++
+    return pntSet
+  }
 
   initMap() {
     EsriLoader.loadModules([
@@ -141,6 +296,15 @@ class MainBox extends Component {
         view: this.view,
         unit: 'metric'
       })
+      this.graphic.symbol = {
+        type: "simple-line",
+        color: [226, 119, 40],
+        width: 1.5
+      };
+      this.polyline = {
+        type:'polyline',
+        paths:[]
+      }
       const sketch = createSketch(this, Sketch);
       this.view.graphics.add(this.graphic)
       this.view.ui.padding = { top: 80, left: 30, right: 0, bottom: 0 };
@@ -151,12 +315,13 @@ class MainBox extends Component {
       this.view.ui.add(sketch, "top-left");
       let len = this.map.layers.items.length
       let queryLayer = this.map.layers.items[len - 1]
-      // this.view.when(function () {
-      //   return queryLayer.when(function () {
-      //     let query = queryLayer.createQuery()
-      //     return queryLayer.queryFeatures(query)
-      //   })
-      // })
+      this.view.when(function () {
+        return queryLayer.when(function () {
+          let query = queryLayer.createQuery()
+          return queryLayer.queryFeatures(query)
+        })
+      })
+
     })
   }
 
@@ -176,8 +341,6 @@ class MainBox extends Component {
       heatMapRenderer,
       popupTemplate: eventPopUpTemplate,
     })
-    if(this.state.currentDynasty !== this.props.currentDynasty) 
-    {this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty)}
     this.map.layers = [this.graphicsLayer2,eventLayer, this.basePeopleFeatureLayer,boundaryLayer];
   }
 
@@ -225,42 +388,42 @@ class MainBox extends Component {
       return void 0;
     }, 2000)
   }
-  // handleBoundarySwitch(){
-  //   console.log('switching...')
-  //   this.setState({showBoundary:!this.state.showBoundary})
-  //   this.baseBoundaryFeatureLayer.visible = !this.state.showBoundary
-  // }
+
   handleCharSwitch(){
     this.setState({showChar:!this.state.showChar})
     this.basePeopleFeatureLayer.visible = !this.state.showChar
   }
-  // handleEventSwitch(){
-  //   this.setState({showEvent:!this.state.showEvent})
-  //   this.baseEventFeatureLayer.visible = !this.state.showEvent
-  // }
+  //trajectory
+  handleShowPath(){
+    this.setState({showTraj:this.props.currentChar?this.state.showTraj+1:0,bntLabel:this.props.currentChar?this.state.showTraj%2===0?'暂停':'继续':'显示轨迹',speedChange:false})
+  }
+  handleReset(){
+    this.setState({showTraj:0,bntLabel:'重新显示',speedChange:false})
+  }
+  handleSpeedDown(){
+    if(this.state.speed < 191) this.setState({speed:this.state.speed+10,speedChange:true})
+  }
+  handleSpeedUp(){
+    if(this.state.speed > 1) this.setState({speed:this.state.speed-10,speedChange:true})
+  }
+  //
   render() {
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
         <div className={s['switches']}>
-          {/* <Switch defaultChecked onChange={this.handleBoundarySwitch.bind(this)}>边界</Switch> */}
-          <Switch defaultChecked onChange={this.handleCharSwitch.bind(this)}>人物</Switch>
-          {/* <Switch defaultChecked onChange={this.handleEventSwitch.bind(this)}>事件</Switch> */}
+          <Switch defaultChecked loading={this.state.charSwitchLoading} disabled={this.state.charSwitchDisable} checkedChildren="o(￣▽￣)ｄ" unCheckedChildren="（○｀ 3′○）" onChange={this.handleCharSwitch.bind(this)}>人物</Switch>
         </div>
         <div className={s['traj_set']}>
-          <Button ghost icon={'caret-right'}>{'显示轨迹'}</Button>
+          <Button ghost icon={'caret-right'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
           <ButtonGroup>
-            <Button ghost icon={'step-backward'}></Button>
-            <Button ghost>{"×1.0"}</Button>
-            <Button ghost icon={'step-forward'}></Button>
+            <Button ghost icon={'step-backward'} onClick={this.handleSpeedDown.bind(this)}></Button>
+            <Button ghost>{'×'+((101-this.state.speed)/100+1).toFixed(1)}</Button>
+            <Button ghost icon={'step-forward'} onClick={this.handleSpeedUp.bind(this)}></Button>
           </ButtonGroup>
         </div>
         <div className={s['play_button']}>
-          <Button
-            onClick={this.handleLayerPlay.bind(this)}
-            ghost
-            icon={this.state.isPlay ? 'pause' : 'caret-right'}
-          >
+          <Button onClick={this.handleLayerPlay.bind(this)} ghost icon={this.state.isPlay ? 'pause' : 'caret-right'}>
             {this.state.playControllerText}
           </Button>
         </div>

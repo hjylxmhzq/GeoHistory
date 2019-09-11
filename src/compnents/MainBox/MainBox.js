@@ -184,7 +184,7 @@ class MainBox extends Component {
       let k = -(pointB.x-pointA.x)/(pointB.y-pointA.y)
       let x0 = (pointA.x+pointB.x)/2
       let y0 = (pointA.y+pointB.y)/2
-      let dist = Math.sqrt((pointA.x-pointB.x)*(pointA.x-pointB.x)+(pointA.y-pointB.y)*(pointA.y-pointB.y))/2*Math.tan(angle)
+      let dist = inverse*Math.sqrt((pointA.x-pointB.x)*(pointA.x-pointB.x)+(pointA.y-pointB.y)*(pointA.y-pointB.y))/2*Math.tan(angle)
       pointC.x = x0+dist*Math.sqrt(1/(1+k*k))
       pointC.y = y0+dist*Math.sqrt(1/(1+k*k))*k
     }

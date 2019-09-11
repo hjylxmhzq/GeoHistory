@@ -11,6 +11,7 @@ import { RightDrawer } from '../Drawer/Common';
 import { YearModal } from '../YearModal/YearModal';
 import { eventPopUpTemplate } from './utils/popUpTemplate';
 
+const ButtonGroup = Button.Group;
 const BOUNDARY_LAYER_NUM = 121;
 
 class MainBox extends Component {
@@ -263,7 +264,12 @@ class MainBox extends Component {
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
         <div className={s['traj_set']}>
-          
+          <Button ghost icon={'caret-right'}>{'显示轨迹'}</Button>
+          <ButtonGroup>
+            <Button ghost icon={'step-backward'}></Button>
+            <Button ghost>{"×1.0"}</Button>
+            <Button ghost icon={'step-forward'}></Button>
+          </ButtonGroup>
         </div>
         <div className={s['play_button']}>
           <Button

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from 'antd';
+import { Button,Icon } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, renderer, heatMapRenderer } from './utils';
@@ -277,8 +277,7 @@ class MainBox extends Component {
         <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
         <Button
           style={{ position: 'absolute', right: 70, bottom: 80 }}
-          onClick={this.openYearModal.bind(this)}
-        >年代变化</Button>
+          onClick={this.openYearModal.bind(this)}>年代变化</Button>
         <YearModal
           visible={this.state.yearModal}
           handleCancel={() => this.setState({ yearModal: false })}

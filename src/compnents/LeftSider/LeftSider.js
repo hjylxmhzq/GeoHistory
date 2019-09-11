@@ -23,19 +23,17 @@ class LeftSider extends Component {
 
 
   handleEventSelect(eventName) {
-    console.log(eventName)
     this.setState({ currentEvent: eventName });
   }
   handlePeopleSelect(name) {
-    console.log(name)
+    if(this.props.onSelectChar) this.props.onSelectChar(name)
     this.setState({ currentPeople: name });
   }
   handleYearSelect(dynasty, year, idx) {
     this.props.onSelectYear(idx);
-    this.setState({ currentYear: [dynasty, year],currentPeople:null,currentEvent:null});
+    this.setState({ currentYear: [dynasty, year]});
   }
   render() {
-
     const years = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
@@ -62,7 +60,7 @@ class LeftSider extends Component {
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
-              <Option value={event.HName}>
+              <Option value={event.HName} key={event.HName}>
                 {event.HName}
               </Option>
             )
@@ -78,7 +76,7 @@ class LeftSider extends Component {
         {this.props.charProfiles[this.state.currentYear[0]] &&
           this.props.charProfiles[this.state.currentYear[0]].map(
             char => (
-              <Option value={char.Name}>
+              <Option value={char.Name} key={char.Name}>
                 {char.Name}
               </Option>
             )
@@ -106,12 +104,8 @@ class LeftSider extends Component {
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
           </Dropdown>
         </div>
-        <div>
-          {people}
-        </div>
-        <div>
-          {events}
-        </div>
+        <div>{people}</div>
+        <div>{events}</div>
         <div>
           <Dropdown overlay={tiles} trigger={['click']}>
             <Button>{`底图: ${this.props.currentTile || '底图'}`}</Button>

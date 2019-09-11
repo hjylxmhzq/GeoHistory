@@ -26,22 +26,16 @@ class App extends Component {
       yearSelectedKeys: [],
       charSelectedKeys: [],
       eventSelectedKeys: [],
-      isYearOpen: true,
-      isEventOpen: false,
-      isCharOpen: false,
       charProfiles: [],
       years: [],
       events: [],
       experience: [],
       yearArea: [],
-      curDrawing: 0,
       currentYear: 0,
       currentTileMap: 'topo',
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
-      isCharSelectChangeToAnother: false,
-      isEventSelectChangeToAnother: false,
-      isYearSelectChangeToAnother: false,
+      currentChar:null
     }
   }
 
@@ -79,7 +73,11 @@ class App extends Component {
     });
     return data;
   }
-
+  //handle character selection
+  onSelectChar(name){
+    console.log(name)
+    this.setState({currentChar:name})
+  }
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
@@ -116,6 +114,7 @@ class App extends Component {
           handleTileSelect={this.onSelectTileMap.bind(this)}
           currentTile={this.state.currentTileMap}
           onSelectYear={this.onSelectYear.bind(this)}
+          onSelectChar={this.onSelectChar.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
@@ -124,23 +123,12 @@ class App extends Component {
               charProfiles={this.state.charProfiles}
               events={this.state.events}
               yearArea={this.state.yearArea}
-              yearSelected={this.state.yearSelectedKeys[0]}
-              charSelected={this.state.charSelectedKeys[0]}
-              eventSelected={this.state.eventSelectedKeys[0]}
-              curDrawingPoint={this.handleCurDrawing}
               onSelectYear={this.onSelectYear.bind(this)}
               currentYear={this.state.currentYear}
+              currentChar={this.state.currentChar}
             />
             {exp.length ? <ExpTimeline exp={exp} /> : null}
           </Content>
-          <EventDrawer
-            events={this.state.events}
-            isShow={this.state.isEventDrawerOpen}
-            eventSelected={this.state.eventSelectedKeys[0]} />
-          <CharDrawer
-            chars={this.state.charProfiles}
-            isShow={this.state.isCharDrawerOpen}
-            charSelected={this.state.charSelectedKeys[0]} />
         </Layout>
 
       </div>

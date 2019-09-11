@@ -113,12 +113,12 @@ class LeftSider extends Component {
     const tiles = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {this.props.currentTile &&
-          this.props.tilesMap.map(
+          Object.keys(this.props.tilesMap).map(
             tile => (
               <Menu.Item
                 key={tile}
                 onClick={() => { this.props.handleTileSelect(tile) }}>
-                {tile}
+                {this.props.tilesMap[tile]}
               </Menu.Item>
             )
           )}
@@ -135,7 +135,7 @@ class LeftSider extends Component {
         <div>{events}</div>
         <div>
           <Dropdown overlay={tiles} trigger={['click']}>
-            <Button>{`底图: ${this.props.currentTile || '底图'}`}</Button>
+            <Button>{`底图: ${this.props.tilesMap[this.props.currentTile] || '底图'}`}</Button>
           </Dropdown>
         </div>
       </div>

@@ -4,19 +4,21 @@ import LeftSider from './compnents/LeftSider/LeftSider'
 import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
 import ExpTimeline from './compnents/Timelist/ExpTimeline'
-import { Layout } from 'antd';
+import { Layout, Switch } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
 import Config from './config';
+import { ToolBox } from './compnents/ToolBox';
 
 const staticPath = Config.staticPath;
 
-const tilesMap = [
-  'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer',
-  'dark-gray',
-  'streets',
-  'hybrid'
-]
+const tilesMap = {
+  'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'StreetWarm',
+  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer': 'Community',
+  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer': 'Gray',
+  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'Warm'
+};
+
 
 const { Content } = Layout
 class App extends Component {
@@ -35,13 +37,24 @@ class App extends Component {
       currentTileMap: 'topo',
       isCharDrawerOpen: false,
       isEventDrawerOpen: false,
+<<<<<<< HEAD
       currentChar:undefined,
       currentDynasty:0,
+=======
+      isCharSelectChangeToAnother: false,
+      isEventSelectChangeToAnother: false,
+      isYearSelectChangeToAnother: false,
+      Trigger: {
+        heatmap: false,
+      },
+      currentChar:null,
+      currentDynasty:0
+>>>>>>> f0e7cd476e771a42a1a6898571d654960b3e7b25
     }
   }
 
   onSelectYear(id) {
-    this.setState({currentYear: id});
+    this.setState({ currentYear: id });
   }
 
   onSelectTileMap(currentTileMap) {
@@ -128,11 +141,24 @@ class App extends Component {
               yearArea={this.state.yearArea}
               onSelectYear={this.onSelectYear.bind(this)}
               currentYear={this.state.currentYear}
+              currentTileMap={this.state.currentTileMap}
+              trigger={this.state.Trigger}
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
             />
             {exp.length ? <ExpTimeline exp={exp} /> : null}
           </Content>
+          <EventDrawer
+            events={this.state.events}
+            isShow={this.state.isEventDrawerOpen}
+            eventSelected={this.state.eventSelectedKeys[0]} />
+          <ToolBox>
+            <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+          </ToolBox>
+          <CharDrawer
+            chars={this.state.charProfiles}
+            isShow={this.state.isCharDrawerOpen}
+            charSelected={this.state.charSelectedKeys[0]} />
         </Layout>
 
       </div>

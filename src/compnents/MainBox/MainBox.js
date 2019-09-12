@@ -446,8 +446,8 @@ class MainBox extends Component {
         {this.props.currentChar?this.props.experience.map((e,idx)=>{
           return (<Timeline.Item 
                     onClick={this.handleExpNav.bind(this,idx)}
-                    style={{color:this.state.expIdx===idx?'#ff0000':''}} 
-                    dot={idx===this.state.expIdx?<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />:undefined} >
+                    style={{color:this.state.expIdx===idx?'deepskyblue':''}} 
+                    dot={idx===this.state.expIdx?<Icon type="loading" style={{fontSize:'20px'}}/>:undefined} >
           {e.Year+'年，'+e.Place+'，'+e.Content}</Timeline.Item>)
         }):<Empty description={'请选择人物'}/>}
       </Timeline>

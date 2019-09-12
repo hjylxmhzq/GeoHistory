@@ -12,12 +12,14 @@ class CharDrawer extends Component{
 
   render(){
     let content = (<div/>)
+    
     if(this.props.charProfile){
       let charProfile = this.props.charProfile
+      console.log(this.iconURL+charProfile.FID+'.jpg')
       content = (
         <div>
            <div style={{align:'center',textAlign:'center'}}>
-            <img src={this.iconURL+'0.jpg'}/>
+            <img src={this.iconURL+charProfile.FID+'.jpg'}/>
           </div>
           <hr/>
           <p>{`姓名：${charProfile.Name}`}</p>
@@ -32,7 +34,7 @@ class CharDrawer extends Component{
       )
     }else{
       content=(
-        <Empty description={'暂无数据'}/>
+        <Empty description={'请选择人物'}/>
       )
     }
     return(

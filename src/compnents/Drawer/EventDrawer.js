@@ -25,7 +25,7 @@ class EventDrawer extends Component{
       )
     }else{
       content=(
-        <Empty description={'暂无数据'}/>
+        <Empty description={'请选择事件'}/>
       )
     }
     return(

@@ -137,3 +137,8 @@
 .tool_item_text {
   padding: 30px;
 }
+
+.toolbox_item {
+  display: flex;
+  justify-content: space-between;
+}

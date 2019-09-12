@@ -53,6 +53,7 @@ class LeftSider extends Component {
         case '清':dynastyID=17; break
         case '民国':dynastyID=18; break
         case '中华人民共和国':dynastyID=19; break
+        default: break
       }
       this.props.onSelectDynasty(dynastyID)
     }

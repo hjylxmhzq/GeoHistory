@@ -42,9 +42,12 @@ class App extends Component {
       isYearSelectChangeToAnother: false,
       Trigger: {
         heatmap: false,
+        eventHeatmap: false,
+        toolbar: true,
+        comment: true
       },
-      currentChar:null,
-      currentDynasty:0
+      currentChar: null,
+      currentDynasty: 0
     }
   }
 
@@ -55,9 +58,9 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
-  onSelectDynasty(ID){
+  onSelectDynasty(ID) {
     console.log(ID)
-    this.setState({currentDynasty:ID})
+    this.setState({ currentDynasty: ID })
   }
   processYearArea(data) {
     const result = [];
@@ -86,9 +89,9 @@ class App extends Component {
     return data;
   }
   //handle character selection
-  onSelectChar(name){
+  onSelectChar(name) {
     console.log(name)
-    this.setState({currentChar:name})
+    this.setState({ currentChar: name })
   }
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
@@ -150,7 +153,21 @@ class App extends Component {
             isShow={this.state.isEventDrawerOpen}
             eventSelected={this.state.eventSelectedKeys[0]} />
           <ToolBox>
-            <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            <div className="toolbox_item">
+              <span style={{ paddingRight: 20 }}>历史人物分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span style={{ paddingRight: 20 }}>历史事件分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ eventHeatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span style={{ paddingRight: 20 }}>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span style={{ paddingRight: 20 }}>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
+            </div>
           </ToolBox>
           <CharDrawer
             chars={this.state.charProfiles}

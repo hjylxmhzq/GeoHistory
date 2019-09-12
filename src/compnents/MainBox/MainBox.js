@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Button,Switch } from 'antd';
+import { Button, Switch } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
-import { createSketch, renderer, heatMapRenderer, simpleMarkerRender } from './utils';
+import { createSketch, renderer, heatMapRenderer, simpleMarkerRender, labelingInfo, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
@@ -29,9 +29,10 @@ class MainBox extends Component {
       selectedBoundary: [],
       rightDrawShow: false,
       showYearModal: false,
-      showBoundary:true,
-      showChar:true,
-      showEvent:true
+      showBoundary: true,
+      showChar: true,
+      showEvent: true,
+      selectedEvents: [],
     }
     this.playTimer = null;
     this.stopUpdate = true;
@@ -41,7 +42,17 @@ class MainBox extends Component {
   componentWillMount() {
     this.initMap()
   }
+  handleMouseOverSearchResult(mapPoint, name, id, e) {
+    console.log(mapPoint)
+    this.view && this.view.popup.open({
+      // Set the popup's title to the coordinates of the location
+      title: name,
+      content: `简介`,
+      location: mapPoint, // Set the location of the popup to the clicked location
+    });
+  }
   componentDidUpdate(prevProps, prevState) {
+    console.log('this:', this);
     if (prevProps.currentYear !== this.props.currentYear) {
       this.changeBoundaryLayer(this.props.currentYear);
     }
@@ -52,10 +63,30 @@ class MainBox extends Component {
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
       this.setState({ rightDrawShow: true });
     }
-    //人物点显示
-
+    // trigger start
+    if (this.sketch) {
+      if (!this.props.trigger.toolbar) {
+        this.view.ui.remove(this.sketch);
+      } else {
+        this.view.ui.add(this.sketch, 'top-left');
+      }
+    }
+    if (this.baseEventFeatureLayer) {
+      if (this.props.trigger.eventHeatmap) {
+        this.map.layers.items[1].renderer = heatMapRenderer;        
+      } else {
+        this.map.layers.items[1].renderer = simpleMarkerRender;
+      }
+    }
+    if (this.basePeopleFeatureLayer) {
+      if (this.props.trigger.heatmap) {
+        this.map.layers.items[2].renderer = heatMapRenderer;        
+      } else {
+        this.map.layers.items[2].renderer = simpleMarkerRender;
+      }
+    }
+    // trigger end
   }
-
 
   initMap() {
     EsriLoader.loadModules([
@@ -75,29 +106,10 @@ class MainBox extends Component {
       this.FeatureLayer = FeatureLayer;
       this.Basemap = Basemap;
       this.graphicsLayer2 = new GraphicsLayer();
-      this.bLyOpt = {
-        url: this.baseBoundaryFeatureUrl,
-        id: '0',
-        visible: true,
-        renderer
-      };
-      this.evtOpt = {
-        url: this.baseEventFeatureUrl,
-        id: '4',
-        visible: true,
-        popupTemplate: eventPopUpTemplate,
-        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
-      };
-      this.baseBoundaryFeatureLayer = new FeatureLayer(this.bLyOpt);
-      this.baseEventFeatureLayer = new FeatureLayer(this.evtOpt);
-      console.log(this.evtOpt);
-      this.basePeopleFeatureLayer = new FeatureLayer({
-        url: this.basePeopleFeatureUrl,
-        id: '0',
-        visible: true,
-        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender,
-        definitionExpression : 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty),
-      })
+
+      this.baseBoundaryFeatureLayer = new FeatureLayer(boundaryLayerOption);
+      this.baseEventFeatureLayer = new FeatureLayer(eventLayerOption);
+      this.basePeopleFeatureLayer = new FeatureLayer(peopleLayerOption);
 
       this.changeBaseMap = (tileMapUrl) => {
         let tileLayer = new TileLayer({
@@ -149,22 +161,15 @@ class MainBox extends Component {
         view: this.view,
         unit: 'metric'
       })
-      const sketch = createSketch(this, Sketch);
+      this.sketch = createSketch(this, Sketch);
       this.view.graphics.add(this.graphic)
       this.view.ui.padding = { top: 80, left: 30, right: 0, bottom: 0 };
       this.view.ui.remove('zoom')
       this.view.ui.add(zoom)
       this.view.ui.add(compass)
       this.view.ui.add(scaleBar, 'bottom-right');
-      this.view.ui.add(sketch, "top-left");
-      let len = this.map.layers.items.length
-      let queryLayer = this.map.layers.items[len - 1]
-      // this.view.when(function () {
-      //   return queryLayer.when(function () {
-      //     let query = queryLayer.createQuery()
-      //     return queryLayer.queryFeatures(query)
-      //   })
-      // })
+      this.view.ui.add(this.sketch, "top-left");
+
     })
   }
 
@@ -172,22 +177,17 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
-    console.log(this.baseBoundaryFeatureLayer)
-    const boundaryLayer = new this.FeatureLayer({
+    this.baseBoundaryFeatureLayer = new this.FeatureLayer({
       url: this.baseBoundaryFeatureUrl + index,
       visible: true,
-      renderer
+      renderer,
+      labelingInfo
     });
-    const evnetLayerIndex = searchKey(index);
-    const eventLayer = new this.FeatureLayer({
-      url: this.baseEventFeatureUrl + '/' + evnetLayerIndex,
-      visible: true,
-      popupTemplate: eventPopUpTemplate,
-      renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender
-    })
-    if(this.state.currentDynasty !== this.props.currentDynasty) 
-    {this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty)}
-    this.map.layers = [this.graphicsLayer2,eventLayer, this.basePeopleFeatureLayer,boundaryLayer];
+    const eventLayerIndex = searchKey(index);
+    eventLayerOption.id = eventLayerIndex;
+    this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
+    if (this.state.currentDynasty !== this.props.currentDynasty) { this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
+    this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer, this.baseBoundaryFeatureLayer];
   }
 
   openYearModal() {
@@ -239,8 +239,8 @@ class MainBox extends Component {
   //   this.setState({showBoundary:!this.state.showBoundary})
   //   this.baseBoundaryFeatureLayer.visible = !this.state.showBoundary
   // }
-  handleCharSwitch(){
-    this.setState({showChar:!this.state.showChar})
+  handleCharSwitch() {
+    this.setState({ showChar: !this.state.showChar })
     this.basePeopleFeatureLayer.visible = !this.state.showChar
   }
   // handleEventSwitch(){
@@ -295,11 +295,13 @@ class MainBox extends Component {
         <RightDrawer
           isShow={this.state.rightDrawShow}
           onClose={() => this.setState({ rightDrawShow: false })}
+          onHoverResult={this.handleMouseOverSearchResult.bind(this)}
           data={{
             years: this.props.years,
             charProfiles: this.props.charProfiles,
             events: this.props.events,
-            selectedBoundary: this.state.selectedBoundary
+            selectedBoundary: this.state.selectedBoundary,
+            selectedEvents: this.state.selectedEvents
           }}
         />
         {

@@ -50,7 +50,7 @@ export const heatMapRenderer = {
         { color: "#e0cf40", ratio: 0.913 },
         { color: "#ffff00", ratio: 1 }
     ],
-    maxPixelIntensity: 25,
+    maxPixelIntensity: 65,
     minPixelIntensity: 0
 };
 
@@ -60,6 +60,5 @@ export const simpleMarkerRender = {
         type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
         size: 25,
         color: [125, 255, 255],
-        outline: 'blue'
     }
 };

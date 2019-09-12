@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Button, Switch } from 'antd';
+import { Button, Switch, Timeline, Empty, Icon } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
-import { createSketch, renderer, heatMapRenderer, simpleMarkerRender, labelingInfo, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
+import { createSketch, heatMapRenderer, simpleMarkerRender, simplePeopleMarkerRender, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
 import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
@@ -33,29 +33,33 @@ class MainBox extends Component {
       showChar: true,
       showEvent: true,
       selectedEvents: [],
+      showTraj: 0,
+      bntLabel: '显示轨迹',
+      speedChange: false,
+      speed: 101,
+      expIdx: -1,
+      showExp: false,
     }
     this.playTimer = null;
     this.stopUpdate = true;
     this.selectGrphics = [];
     this.changeBaseMap = () => { };
+    this.charHighlight = []
   }
   componentWillMount() {
     this.initMap()
   }
-  handleMouseOverSearchResult(mapPoint, name, id, e) {
-    console.log(mapPoint)
+  handleMouseOverSearchResult(mapPoint, name, content, e) {
     this.view && this.view.popup.open({
       // Set the popup's title to the coordinates of the location
       title: name,
-      content: `简介`,
+      content,
       location: mapPoint, // Set the location of the popup to the clicked location
     });
   }
   componentDidUpdate(prevProps, prevState) {
     console.log('this:', this);
-    if (prevProps.currentYear !== this.props.currentYear) {
-      this.changeBoundaryLayer(this.props.currentYear);
-    }
+    this.changeBoundaryLayer.call(this, this.props.currentYear);
     if (prevProps.currentTileMap !== this.props.currentTileMap) {
       console.log(this.props.currentTileMap)
       this.changeBaseMap(this.props.currentTileMap);
@@ -71,21 +75,164 @@ class MainBox extends Component {
         this.view.ui.add(this.sketch, 'top-left');
       }
     }
-    if (this.baseEventFeatureLayer) {
-      if (this.props.trigger.eventHeatmap) {
-        this.map.layers.items[1].renderer = heatMapRenderer;        
-      } else {
-        this.map.layers.items[1].renderer = simpleMarkerRender;
-      }
-    }
-    if (this.basePeopleFeatureLayer) {
-      if (this.props.trigger.heatmap) {
-        this.map.layers.items[2].renderer = heatMapRenderer;        
-      } else {
-        this.map.layers.items[2].renderer = simpleMarkerRender;
-      }
-    }
+
     // trigger end
+    //人物点显示
+    this.trajCtrl(prevProps.currentChar);
+    this.basePeopleFeatureLayer && (this.basePeopleFeatureLayer.visible = this.props.trigger.showChar);
+  }
+
+  trajCtrl(prevChar) {
+    if (!this.props.trigger.showChar) {
+      if (this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if (this.state.showTraj > 0) this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
+      if (this.graphic) this.graphic.geometry = undefined
+      if (this.polyline) this.polyline.paths = []
+      return
+    }
+    if (prevChar >= 0 && this.props.currentChar === undefined) {
+      if (this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if (this.state.showTraj > 0) this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
+      if (this.graphic) this.graphic.geometry = undefined
+      if (this.polyline) this.polyline.paths = []
+      if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
+      if (this.t) {
+        clearInterval(this.t)
+        this.t = null
+      }
+      if (this.state.showTraj > 0) this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
+      if (this.graphic) this.graphic.geometry = undefined
+      if (this.polyline) this.polyline.paths = []
+      if (this.view) this.loadingPath()
+      if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID=' + this.props.currentChar
+    } else if (prevChar || this.props.currentChar) {
+      if (this.basePeopleFeatureLayer && prevChar !== this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID=' + this.props.currentChar
+      if (this.state.showTraj === 0) {
+        //console.log('loading...')
+        if (this.t) {
+          clearInterval(this.t)
+          this.t = null
+        }
+
+        if (this.polyline) this.polyline.paths = []
+        if (this.view) this.loadingPath()
+      } else if (this.state.showTraj % 2 !== 0) {
+        //console.log('showing trajectory...')
+        if (this.state.speedChange) {
+          if (this.t) {
+            clearInterval(this.t)
+            this.t = null
+          }
+        }
+        if (this.traj && this.traj.length > 0) {
+          if (!this.t) {
+            this.play()
+          }
+        }
+      } else {
+        //console.log('pausing...')
+        if (this.t) {
+          clearInterval(this.t)
+          this.t = null
+        }
+      }
+    } else {
+      if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
+    }
+  }
+
+
+  play() {
+    //if(this.state.showTraj===1)this.view.goTo({center:this.traj[0],zoom:5},{duration:500,easing:'in-out-expo'})
+    this.t = setInterval(() => {
+      if (this.traj.length > 0) {
+        let tmp = this.traj.shift()
+        //console.log(tmp)
+        //this.view.goTo({center:tmp,zoom:6},{duration:1000,easing:'in-out-expo'})
+        this.polyline.paths.push(tmp)
+        this.graphic.geometry = this.polyline
+        let manifestIdx = this.nodeIdx.shift()
+        if (this.polyline.paths.length === manifestIdx) {
+
+          this.view.whenLayerView(this.basePeopleFeatureLayer).then((layerView) => {
+            let query = this.basePeopleFeatureLayer.createQuery();
+            query.where = 'Poet_ID=' + this.props.currentChar
+            this.basePeopleFeatureLayer.queryFeatures(query).then((result) => {
+              //this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar+' and Sequence<='+(result.features.length-this.nodeIdx.length-1)
+              this.setState({ expIdx: this.state.expIdx + 1 }, () => { })
+            })
+          });
+        } else {
+          this.nodeIdx.unshift(manifestIdx)
+        }
+      } else {
+        clearInterval(this.t)
+        this.t = null
+        this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
+        setTimeout(() => {
+          this.setState({ expIdx: -1 })
+        }, 1000)
+      }
+    }, this.state.speed);
+
+  }
+
+  loadingPath() {
+    this.view.whenLayerView(this.basePeopleFeatureLayer).then(() => {
+      let queryChar = this.basePeopleFeatureLayer.createQuery();
+      queryChar.where = "Poet_ID=" + this.props.currentChar
+      this.basePeopleFeatureLayer.queryFeatures(queryChar).then((result) => {
+        let feature = result.features
+        this.traj = []
+        this.cnt = 0
+        this.nodeIdx = [1]
+        for (let i = 0; i < feature.length - 1; i++) {
+          this.traj.push.apply(this.traj, this.interpolation(feature[i].geometry, feature[i + 1].geometry, i % 2 === 0 ? 1 : -1))
+          this.nodeIdx.push(this.cnt)
+        }
+      })
+    })
+  }
+
+  interpolation(pointA, pointB, inverse) {
+    //calculate center
+    let angle = (Math.PI / 6 + Math.round(Math.random()) / 5)
+    let pointC = { x: 0, y: 0 }
+    if (pointA.x === pointB.x) {
+      pointC.x = pointA.x + Math.abs(pointB.y - pointA.y) / 2 * Math.tan(angle)
+      pointC.y = pointA.y
+    } else {
+      let k = -(pointB.x - pointA.x) / (pointB.y - pointA.y)
+      let x0 = (pointA.x + pointB.x) / 2
+      let y0 = (pointA.y + pointB.y) / 2
+      let dist = inverse * Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y)) / 2 * Math.tan(angle)
+      pointC.x = x0 + dist * Math.sqrt(1 / (1 + k * k))
+      pointC.y = y0 + dist * Math.sqrt(1 / (1 + k * k)) * k
+    }
+    let t = 0
+    let incre = 0.1 / Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y))
+    let pnt = { x: 0, y: 0 }, tmpPnt1 = { x: 0, y: 0 }, tmpPnt2 = { x: 0, y: 0 }
+    let pntSet = []
+    while (t <= 1) {
+      tmpPnt1.x = (1 - t) * pointA.x + t * pointC.x
+      tmpPnt1.y = (1 - t) * pointA.y + t * pointC.y
+      tmpPnt2.x = (1 - t) * pointC.x + t * pointB.x
+      tmpPnt2.y = (1 - t) * pointC.y + t * pointB.y
+      pnt.x = (1 - t) * tmpPnt1.x + t * tmpPnt2.x
+      pnt.y = (1 - t) * tmpPnt1.y + t * tmpPnt2.y
+      pntSet.push([pnt.x, pnt.y])
+      this.cnt++
+      t += incre
+    }
+    pntSet.push([pointB.x, pointB.y])
+    this.cnt++
+    return pntSet
   }
 
   initMap() {
@@ -162,6 +309,16 @@ class MainBox extends Component {
         unit: 'metric'
       })
       this.sketch = createSketch(this, Sketch);
+      this.graphic.symbol = {
+        type: "simple-line",
+        color: [226, 119, 40],
+        width: 1.5
+      };
+      this.polyline = {
+        type: 'polyline',
+        paths: []
+      }
+      this.sketch = createSketch(this, Sketch);
       this.view.graphics.add(this.graphic)
       this.view.ui.padding = { top: 80, left: 30, right: 0, bottom: 0 };
       this.view.ui.remove('zoom')
@@ -169,6 +326,14 @@ class MainBox extends Component {
       this.view.ui.add(compass)
       this.view.ui.add(scaleBar, 'bottom-right');
       this.view.ui.add(this.sketch, "top-left");
+      let len = this.map.layers.items.length
+      let queryLayer = this.map.layers.items[len - 1]
+      this.view.when(function () {
+        return queryLayer.when(function () {
+          let query = queryLayer.createQuery()
+          return queryLayer.queryFeatures(query)
+        })
+      })
 
     })
   }
@@ -177,16 +342,27 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
-    this.baseBoundaryFeatureLayer = new this.FeatureLayer({
-      url: this.baseBoundaryFeatureUrl + index,
-      visible: true,
-      renderer,
-      labelingInfo
-    });
+    console.log('change', this)
+    if (this.baseEventFeatureLayer) {
+      if (this.props.trigger.eventHeatmap) {
+        eventLayerOption.renderer = heatMapRenderer;
+      } else {
+        eventLayerOption.renderer = simpleMarkerRender;
+      }
+    }
+    if (this.basePeopleFeatureLayer) {
+      if (this.props.trigger.heatmap) {
+        peopleLayerOption.renderer = heatMapRenderer;
+      } else {
+        peopleLayerOption.renderer = simplePeopleMarkerRender;
+      }
+    }
+    boundaryLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + index;
+    this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
-    eventLayerOption.id = eventLayerIndex;
+    eventLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
-    if (this.state.currentDynasty !== this.props.currentDynasty) { this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
+    if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
     this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer, this.baseBoundaryFeatureLayer];
   }
 
@@ -239,37 +415,76 @@ class MainBox extends Component {
   //   this.setState({showBoundary:!this.state.showBoundary})
   //   this.baseBoundaryFeatureLayer.visible = !this.state.showBoundary
   // }
+  //人物开关
   handleCharSwitch() {
     this.setState({ showChar: !this.state.showChar })
     this.basePeopleFeatureLayer.visible = !this.state.showChar
   }
-  // handleEventSwitch(){
-  //   this.setState({showEvent:!this.state.showEvent})
-  //   this.baseEventFeatureLayer.visible = !this.state.showEvent
-  // }
+  //经历开关
+  handleExpSwitch() {
+    this.setState({ showExp: !this.state.showExp })
+  }
+  //trajectory
+  handleShowPath() {
+    this.setState({ showTraj: this.props.currentChar ? this.state.showTraj + 1 : 0, bntLabel: this.props.currentChar ? this.state.showTraj % 2 === 0 ? '暂停' : '继续' : '显示轨迹', speedChange: false })
+  }
+  handleSpeedDown() {
+    if (this.state.speed < 191) this.setState({ speed: this.state.speed + 10, speedChange: true })
+  }
+  handleSpeedUp() {
+    if (this.state.speed > 1) this.setState({ speed: this.state.speed - 10, speedChange: true })
+  }
+  //
+  handleExpNav(idx) {
+    console.log(idx)
+
+    this.view.whenLayerView(this.basePeopleFeatureLayer).then((layerView) => {
+      let query = this.basePeopleFeatureLayer.createQuery()
+      query.where = `Poet_ID=${this.props.currentChar} and Sequence=${idx}`
+      this.basePeopleFeatureLayer.queryFeatures(query).then((result) => {
+        let feature = result.features[0]
+        let highlight = layerView.highlight(feature)
+        setTimeout(() => {
+          highlight.remove()
+        }, 2000)
+        this.view.goTo({ center: feature.geometry, zoom: 6 }, { duration: 1000, easing: 'in-out-expo' })
+      })
+    })
+
+  }
   render() {
+    console.log(this.props.expIdx)
+    let timeline = (
+      <Timeline>
+        <div className={'charExp'}>人物经历</div>
+        {this.props.currentChar ? this.props.experience.map((e, idx) => {
+          return (<Timeline.Item
+            onClick={this.handleExpNav.bind(this, idx)}
+            style={{ color: this.state.expIdx === idx ? '#ff0000' : '' }}
+            dot={idx === this.state.expIdx ? <Icon type="clock-circle-o" style={{ fontSize: '16px' }} /> : undefined} >
+            {e.Year + '年，' + e.Place + '，' + e.Content}</Timeline.Item>)
+        }) : <Empty description={'请选择人物'} />}
+      </Timeline>
+    )
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
+
+        {this.props.trigger.showExp ? timeline : undefined}
         <div className={s['switches']}>
-          {/* <Switch defaultChecked onChange={this.handleBoundarySwitch.bind(this)}>边界</Switch> */}
-          <Switch defaultChecked onChange={this.handleCharSwitch.bind(this)}>人物</Switch>
-          {/* <Switch defaultChecked onChange={this.handleEventSwitch.bind(this)}>事件</Switch> */}
+          <Switch defaultChecked checkedChildren="o(￣▽￣)ｄ" unCheckedChildren="（○｀ 3′○）" onChange={this.handleCharSwitch.bind(this)} />
+          <Switch checkedChildren="(ノへ￣、)" unCheckedChildren="(°ー°〃)" onChange={this.handleExpSwitch.bind(this)} />
         </div>
         <div className={s['traj_set']}>
-          <Button ghost icon={'caret-right'}>{'显示轨迹'}</Button>
+          <Button ghost icon={'caret-right'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
           <ButtonGroup>
-            <Button ghost icon={'step-backward'}></Button>
-            <Button ghost>{"×1.0"}</Button>
-            <Button ghost icon={'step-forward'}></Button>
+            <Button ghost icon={'step-backward'} onClick={this.handleSpeedDown.bind(this)}></Button>
+            <Button ghost>{'×' + ((101 - this.state.speed) / 100 + 1).toFixed(1)}</Button>
+            <Button ghost icon={'step-forward'} onClick={this.handleSpeedUp.bind(this)}></Button>
           </ButtonGroup>
         </div>
         <div className={s['play_button']}>
-          <Button
-            onClick={this.handleLayerPlay.bind(this)}
-            ghost
-            icon={this.state.isPlay ? 'pause' : 'caret-right'}
-          >
+          <Button onClick={this.handleLayerPlay.bind(this)} ghost icon={this.state.isPlay ? 'pause' : 'caret-right'}>
             {this.state.playControllerText}
           </Button>
         </div>

@@ -33,7 +33,7 @@ export class ToolBox extends React.Component {
         <Drawer
           title="工具箱"
           placement="left"
-          closable={false}
+          closable={true}
           onClose={this.onClose}
           visible={this.state.visible}
           mask={false}

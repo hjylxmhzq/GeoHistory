@@ -3,9 +3,9 @@ import { Modal } from 'antd'
 import './Header.css'
 class Header extends Component{
     static defaultProps = {
-        title:'唐代历史地理数据展示平台',
+        title:'中国历史地理数据展示平台',
         about:'关于我们',
-        aboutTitle:'ESRI DEMO-唐朝历史地理信息展示平台',
+        aboutTitle:'ESRI DEMO-历史地理信息展示平台',
 
     }
     constructor(){

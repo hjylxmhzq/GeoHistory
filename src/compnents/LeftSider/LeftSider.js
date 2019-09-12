@@ -22,40 +22,17 @@ class LeftSider extends Component {
   }
 
 
-  handleEventSelect(eventName) {
-    this.setState({ currentEvent: eventName });
+  handleEventSelect(eventFID) {
+    if(this.props.onSelectEvent) this.props.onSelectEvent(eventFID)
+    this.setState({ currentEvent: eventFID });
   }
-  handlePeopleSelect(name) {
-    if(this.props.onSelectChar) this.props.onSelectChar(name)
-    this.setState({ currentPeople: name });
+  handlePeopleSelect(charFID) {
+    if(this.props.onSelectChar) this.props.onSelectChar(charFID)
+    this.setState({ currentPeople: charFID });
   }
   handleYearSelect(dynasty, year, idx) {
     if(this.props.onSelectDynasty) {
-      let dynastyID = 0
-      switch(dynasty){
-        case '夏':dynastyID=0; break
-        case '商':dynastyID=1; break
-        case '周':dynastyID=2; break
-        case '春秋':dynastyID=3; break
-        case '战国':dynastyID=4; break
-        case '秦':dynastyID=5; break
-        case '汉':dynastyID=6; break
-        case '三国':dynastyID=7; break
-        case '晋':dynastyID=8; break
-        case '十六国':dynastyID=9; break
-        case '南北朝':dynastyID=10; break
-        case '隋':dynastyID=11; break
-        case '唐':dynastyID=12; break
-        case '五代十国':dynastyID=13; break
-        case '宋':dynastyID=14; break
-        case '元':dynastyID=15; break
-        case '明':dynastyID=16; break
-        case '清':dynastyID=17; break
-        case '民国':dynastyID=18; break
-        case '中华人民共和国':dynastyID=19; break
-        default: break
-      }
-      this.props.onSelectDynasty(dynastyID)
+      this.props.onSelectDynasty(dynasty)
     }
     if(this.props.onSelectYear) this.props.onSelectYear(idx);
     this.setState({ currentYear: [dynasty, year]});
@@ -88,7 +65,7 @@ class LeftSider extends Component {
         {this.props.events[this.state.currentYear[0]] &&
           this.props.events[this.state.currentYear[0]].map(
             event => (
-              <Option value={event.HName} key={event.HName}>
+              <Option value={event.FID} key={event.FID}>
                 {event.HName}
               </Option>
             )

@@ -3,7 +3,6 @@ import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
 import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
-import ExpTimeline from './compnents/Timelist/ExpTimeline'
 import { Layout, Switch } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
@@ -25,9 +24,6 @@ class App extends Component {
   constructor() {
     super()
     this.state = {
-      yearSelectedKeys: [],
-      charSelectedKeys: [],
-      eventSelectedKeys: [],
       charProfiles: [],
       years: [],
       events: [],
@@ -35,8 +31,6 @@ class App extends Component {
       yearArea: [],
       currentYear: 0,
       currentTileMap: 'topo',
-      isCharDrawerOpen: false,
-      isEventDrawerOpen: false,
       isCharSelectChangeToAnother: false,
       isEventSelectChangeToAnother: false,
       isYearSelectChangeToAnother: false,
@@ -44,10 +38,13 @@ class App extends Component {
         heatmap: false,
         eventHeatmap: false,
         toolbar: true,
-        comment: true
+        comment: true,
+        showChar: true,
+        showExp: false
       },
       currentChar: null,
-      currentDynasty: 0
+      currentDynasty: "夏",
+      currentEvent: null
     }
   }
 
@@ -58,10 +55,11 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
-  onSelectDynasty(ID) {
-    console.log(ID)
-    this.setState({ currentDynasty: ID })
+
+  onSelectDynasty(dynasty) {
+    this.setState({ currentDynasty: dynasty })
   }
+
   processYearArea(data) {
     const result = [];
     Object.keys(data).forEach(d => {
@@ -89,10 +87,15 @@ class App extends Component {
     return data;
   }
   //handle character selection
-  onSelectChar(name) {
-    console.log(name)
-    this.setState({ currentChar: name })
+  onSelectChar(charFID) {
+    this.setState({ currentChar: charFID })
+
   }
+
+  onSelectEvent(eventFID) {
+    this.setState({ currentEvent: eventFID })
+  }
+
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
@@ -112,12 +115,13 @@ class App extends Component {
       console.error(err);
     })
   }
+
   render() {
-    const exp = []
-    this.state.experience.length && this.state.experience['Tang'].map((e) => {
-      if (e.ID === this.state.charSelectedKeys[0]) exp.push(e)
-      return void 0;
-    })
+    let experience = []
+    let trash = null
+    if (this.state.experience && this.state.currentChar !== null) {
+      [].concat(...Object.values(this.state.experience)).map((e) => { e["Poet ID"] === String(this.state.currentChar) ? experience.push(e) : trash = undefined })
+    }
     return (
       <div className="App">
         <Header />
@@ -131,6 +135,7 @@ class App extends Component {
           onSelectYear={this.onSelectYear.bind(this)}
           onSelectDynasty={this.onSelectDynasty.bind(this)}
           onSelectChar={this.onSelectChar.bind(this)}
+          onSelectEvent={this.onSelectEvent.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
@@ -145,34 +150,36 @@ class App extends Component {
               trigger={this.state.Trigger}
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
+              experience={experience}
             />
-            {exp.length ? <ExpTimeline exp={exp} /> : null}
           </Content>
-          <EventDrawer
-            events={this.state.events}
-            isShow={this.state.isEventDrawerOpen}
-            eventSelected={this.state.eventSelectedKeys[0]} />
           <ToolBox>
             <div className="toolbox_item">
-              <span style={{ paddingRight: 20 }}>历史人物分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+              <span>人物人生轨迹面板</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showExp: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
             <hr />
             <div className="toolbox_item">
-              <span style={{ paddingRight: 20 }}>历史事件分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ eventHeatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+              <span>在地图上显示选中人物</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showChar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
             <hr />
             <div className="toolbox_item">
-              <span style={{ paddingRight: 20 }}>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
+              <span>历史人物分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
             <hr />
             <div className="toolbox_item">
-              <span style={{ paddingRight: 20 }}>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
+              <span>历史事件分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ eventHeatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
           </ToolBox>
-          <CharDrawer
-            chars={this.state.charProfiles}
-            isShow={this.state.isCharDrawerOpen}
-            charSelected={this.state.charSelectedKeys[0]} />
+          <EventDrawer eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...Object.values(this.state.events))[this.state.currentEvent] : undefined} />
+          <CharDrawer charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
         </Layout>
 
       </div>

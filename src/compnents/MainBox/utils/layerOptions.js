@@ -1,5 +1,5 @@
-import { eventPopUpTemplate } from "./popUpTemplate";
-import { simpleMarkerRender, renderer } from "./renderer";
+import { eventPopUpTemplate, peoplePopUpTemplate } from "./popUpTemplate";
+import { simpleMarkerRender, simplePeopleMarkerRender, renderer } from "./renderer";
 import { labelingInfo } from './label';
 import config from '../../../config';
 
@@ -8,14 +8,14 @@ const baseEventFeatureUrl = config.gisRestServer + "events_point/MapServer";
 const basePeopleFeatureUrl = config.gisRestServer + "experience/MapServer/";
 
 export const boundaryLayerOption = {
-    url: baseBoundaryFeatureUrl,
-    id: '0',
+    url: baseBoundaryFeatureUrl + '0',
+    // id: '0',
     visible: true,
     renderer,
     labelingInfo
 };
 export const eventLayerOption = {
-    url: baseEventFeatureUrl,
+    url: baseEventFeatureUrl + '0',
     //id: '4',
     visible: true,
     popupTemplate: eventPopUpTemplate,
@@ -25,6 +25,7 @@ export const peopleLayerOption = {
     url: basePeopleFeatureUrl,
     id: '0',
     visible: true,
-    renderer: simpleMarkerRender,
+    renderer: simplePeopleMarkerRender,
+    popupTemplate: peoplePopUpTemplate,
     definitionExpression: 'Sequence=0 and Dynasty_ID=0'
 };

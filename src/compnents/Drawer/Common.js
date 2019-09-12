@@ -25,7 +25,7 @@ export class RightDrawer extends Component{
           {
               this.props.data.selectedBoundary.map(i => {
                   return (
-                      <div onMouseOver={() => { this.props.onHoverResult(i, i.Name) }}>
+                      <div>
                           名称：{i.attributes.Name} <br/>
                           面积：{i.attributes.Area} <br/>
                           <hr/>
@@ -37,9 +37,9 @@ export class RightDrawer extends Component{
           {
               this.props.data.selectedEvents.map(i => {
                   return (
-                      <div>
+                      <div onMouseOver={() => { this.props.onHoverResult(i.geometry, i.attributes.HName, i.attributes.Intro) }}>
                           名称：{i.attributes.HName} <br/>
-                          城市：{i.attributes.HCityName.trim() ? i.HCityName : '无城市信息'} <br/>
+                          城市：{i.attributes.HCityName.trim() ? i.attributes.HCityName : '无城市信息'} <br/>
                           <hr/>
                       </div>
                   )

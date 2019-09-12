@@ -1,39 +1,56 @@
 import React,{Component} from 'react'
-import {Drawer} from 'antd'
+import {Drawer, Button,Empty} from 'antd'
 
 class CharDrawer extends Component{
   constructor(){
     super();
     this.state = {
-      isOpen:false
+      visible:false
     }
     this.iconURL = '../../icon/'
   }
 
   render(){
-    return(
-      <Drawer
-      title={"人物简介"}
-      placement="right"
-      closable={false}
-      visible={this.props.isShow}
-      mask={false}
-      style={{marginTop:'60px'}}
-      >
-        <div style={{align:'center',textAlign:'center'}}>
-          <img
-            alt="icon" src={this.iconURL+(this.props.charSelected?this.props.charSelected:'-1')+'.jpg'} />
+    let content = (<div/>)
+    if(this.props.charProfile){
+      let charProfile = this.props.charProfile
+      content = (
+        <div>
+           <div style={{align:'center',textAlign:'center'}}>
+            <img src={this.iconURL+'0.jpg'}/>
+          </div>
+          <hr/>
+          <p>{`姓名：${charProfile.Name}`}</p>
+          <p>{`字：${charProfile.zi}`}</p>
+          <p>{`号：${charProfile.hao}`}</p>
+          <p>{`生年：${charProfile.STime}`}</p>
+          <p>{`卒年：${charProfile.ETime}`}</p>
+          <p>{`出生地：${charProfile.Home}`}</p>
+          <p>{`简介：`}</p>
+          <p style={{textIndent:'2em'}}>{charProfile.Intro}</p>
         </div>
-        <hr/>
-        <p>{'姓名：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].Name:'')}</p>
-        <p>{'字：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].zi:'')}</p>
-        <p>{'号：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].hao:'')}</p>
-        <p>{'生年：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].STime+' 年':'')}</p>
-        <p>{'卒年：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].ETime+' 年':'')}</p>
-        <p>{'出生地：'+(this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].Home:'')}</p>
-        <p>{'简介：'}</p>
-        <p style={{textIndent:'2em'}}>{this.props.chars.length&&this.props.charSelected?this.props.chars[this.props.charSelected].Intro:''}</p>
-      </Drawer>
+      )
+    }else{
+      content=(
+        <Empty description={'暂无数据'}/>
+      )
+    }
+    return(
+      <div>
+        <Button style={{position:'absolute',right:70,bottom:130}} type="primary" onClick={()=>{this.setState({visible:!this.state.visible})}}>
+          人物简介
+        </Button>
+        <Drawer
+        title={"人物简介"}
+        placement="right"
+        closable={false}
+        visible={this.state.visible}
+        mask={false}
+        style={{marginTop:'60px'}}
+        >
+          {content}
+        </Drawer>
+      </div>
   )}
 }
 

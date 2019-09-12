@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button,Switch } from 'antd';
+import { Button,Switch,Timeline,Empty,Icon } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, renderer, heatMapRenderer, simpleMarkerRender } from './utils';
@@ -35,8 +35,8 @@ class MainBox extends Component {
       bntLabel:'显示轨迹',
       speedChange:false,
       speed:101,
-      charSwitchDisable:false,
-      charSwitchLoading:false
+      expIdx:-1,
+      showExp:false,
     }
     this.playTimer = null;
     this.stopUpdate = true;
@@ -90,9 +90,9 @@ class MainBox extends Component {
       if(this.graphic) this.graphic.geometry = undefined
       if(this.polyline) this.polyline.paths = []
       if(this.view) this.loadingPath()
-      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar
     }else if(prevChar || this.props.currentChar){
-      if(this.basePeopleFeatureLayer && prevChar!==this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
+      if(this.basePeopleFeatureLayer && prevChar!==this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar
       if(this.state.showTraj===0){
         //console.log('loading...')
         if(this.t) {
@@ -111,7 +111,9 @@ class MainBox extends Component {
           }
         }
         if(this.traj && this.traj.length>0) {
-          if(!this.t)this.play()
+          if(!this.t){
+            this.play()
+          }
         }
       }else{
         //console.log('pausing...')
@@ -125,8 +127,9 @@ class MainBox extends Component {
     }
   }
 
+
   play(){
-    if(this.state.showTraj===1)this.view.goTo({center:this.traj[0],zoom:6},{duration:500,easing:'in-out-expo'})
+    //if(this.state.showTraj===1)this.view.goTo({center:this.traj[0],zoom:5},{duration:500,easing:'in-out-expo'})
     this.t = setInterval(() => {
         if(this.traj.length>0) {
           let tmp =  this.traj.shift()
@@ -134,33 +137,30 @@ class MainBox extends Component {
           //this.view.goTo({center:tmp,zoom:6},{duration:1000,easing:'in-out-expo'})
           this.polyline.paths.push(tmp)
           this.graphic.geometry = this.polyline
-          let highlightIdx = this.nodeIdx.shift()
-          if(this.polyline.paths.length===highlightIdx){
+          let manifestIdx = this.nodeIdx.shift()
+          if(this.polyline.paths.length===manifestIdx){
             
-            if(this.charHighlight.length)this.charHighlight.shift().remove()
             this.view.whenLayerView(this.basePeopleFeatureLayer).then((layerView)=>{
             let query = this.basePeopleFeatureLayer.createQuery();
             query.where = 'Poet_ID='+this.props.currentChar
             this.basePeopleFeatureLayer.queryFeatures(query).then((result)=>{
-            this.charHighlight.push(layerView.highlight(result.features.length-this.nodeIdx.length-1));
-            this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar+' and Sequence<='+(result.features.length-this.nodeIdx.length-1)
-            if(!this.traj.length){
-              setTimeout(()=>{
-                while(this.charHighlight.length) this.charHighlight.shift().remove()
-              },800)
-            }
-            //
+            //this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar+' and Sequence<='+(result.features.length-this.nodeIdx.length-1)
+            this.setState({expIdx:this.state.expIdx+1},()=>{})
             })
           });
         }else{
-          this.nodeIdx.unshift(highlightIdx)
+          this.nodeIdx.unshift(manifestIdx)
         } 
         }else{
           clearInterval(this.t)
           this.t=null
-          this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false,isOver:true})
+          this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+          setTimeout(()=>{
+            this.setState({expIdx:-1})
+          },1000)
         }
     }, this.state.speed);
+
   }
 
   loadingPath(){
@@ -401,9 +401,14 @@ class MainBox extends Component {
     }, 2000)
   }
 
+  //人物开关
   handleCharSwitch(){
     this.setState({showChar:!this.state.showChar})
     this.basePeopleFeatureLayer.visible = !this.state.showChar
+  }
+  //经历开关
+  handleExpSwitch(){
+    this.setState({showExp:!this.state.showExp})
   }
   //trajectory
   handleShowPath(){
@@ -416,12 +421,45 @@ class MainBox extends Component {
     if(this.state.speed > 1) this.setState({speed:this.state.speed-10,speedChange:true})
   }
   //
+  handleExpNav(idx){
+    console.log(idx)
+    
+    this.view.whenLayerView(this.basePeopleFeatureLayer).then((layerView)=>{
+      let query = this.basePeopleFeatureLayer.createQuery()
+      query.where = `Poet_ID=${this.props.currentChar} and Sequence=${idx}`
+      this.basePeopleFeatureLayer.queryFeatures(query).then((result)=>{
+        let feature = result.features[0]
+        let highlight = layerView.highlight(feature)
+        setTimeout(()=>{
+          highlight.remove()
+        },2000)
+        this.view.goTo({center:feature.geometry,zoom:6},{duration:1000,easing:'in-out-expo'})
+        })
+    })
+
+  }
   render() {
+    console.log(this.props.expIdx)
+    let timeline = (
+      <Timeline>
+        <div className={'charExp'}>人物经历</div>
+        {this.props.currentChar?this.props.experience.map((e,idx)=>{
+          return (<Timeline.Item 
+                    onClick={this.handleExpNav.bind(this,idx)}
+                    style={{color:this.state.expIdx===idx?'#ff0000':''}} 
+                    dot={idx===this.state.expIdx?<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />:undefined} >
+          {e.Year+'年，'+e.Place+'，'+e.Content}</Timeline.Item>)
+        }):<Empty description={'请选择人物'}/>}
+      </Timeline>
+    )
     return (
       <>
         <div id='mapDiv' style={{ height: '100%', width: '100%', padding: '5px' }}></div>
+        
+        {this.state.showExp?timeline:undefined}
         <div className={s['switches']}>
-          <Switch defaultChecked loading={this.state.charSwitchLoading} disabled={this.state.charSwitchDisable} checkedChildren="o(￣▽￣)ｄ" unCheckedChildren="（○｀ 3′○）" onChange={this.handleCharSwitch.bind(this)}>人物</Switch>
+          <Switch defaultChecked  checkedChildren="o(￣▽￣)ｄ" unCheckedChildren="（○｀ 3′○）" onChange={this.handleCharSwitch.bind(this)}/>
+          <Switch checkedChildren="(ノへ￣、)" unCheckedChildren="(°ー°〃)" onChange={this.handleExpSwitch.bind(this)}/>
         </div>
         <div className={s['traj_set']}>
           <Button ghost icon={'caret-right'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>

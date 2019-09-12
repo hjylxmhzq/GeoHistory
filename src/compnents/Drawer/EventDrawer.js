@@ -10,7 +10,6 @@ class EventDrawer extends Component{
   }
 
   render(){
-    console.log(this.props.eventProfile)
     let content = (<div/>)
     if(this.props.eventProfile){
       let eventProfile = this.props.eventProfile

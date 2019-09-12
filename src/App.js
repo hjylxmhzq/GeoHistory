@@ -3,7 +3,6 @@ import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
 import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
-import ExpTimeline from './compnents/Timelist/ExpTimeline'
 import { Layout, Switch } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
@@ -51,9 +50,11 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
+
   onSelectDynasty(dynasty){
     this.setState({currentDynasty:dynasty})
   }
+
   processYearArea(data) {
     const result = [];
     Object.keys(data).forEach(d => {
@@ -83,7 +84,7 @@ class App extends Component {
   //handle character selection
   onSelectChar(charFID){
     this.setState({currentChar:charFID})
-    
+
   }
 
   onSelectEvent(eventFID){
@@ -109,7 +110,13 @@ class App extends Component {
       console.error(err);
     })
   }
+
   render() {
+    let experience = []
+    let trash = null
+    if(this.state.experience&&this.state.currentChar!==null){
+      [].concat(...Object.values(this.state.experience)).map((e)=>{e["Poet ID"]===String(this.state.currentChar)?experience.push(e):trash=undefined})
+    }
     return (
       <div className="App">
         <Header />
@@ -138,9 +145,9 @@ class App extends Component {
               trigger={this.state.Trigger}
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
+              experience={experience}
             />
           </Content>
-
           <ToolBox>
             <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={(b) => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
           </ToolBox>

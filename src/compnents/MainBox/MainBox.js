@@ -48,7 +48,6 @@ class MainBox extends Component {
     this.initMap()
   }
   componentDidUpdate(prevProps, prevState) {
-    console.log(prevProps.currentChar, this.props.currentChar)
     if (prevProps.currentYear !== this.props.currentYear) {
       this.changeBoundaryLayer(this.props.currentYear);
     }
@@ -60,6 +59,10 @@ class MainBox extends Component {
       this.setState({ rightDrawShow: true });
     }
     //人物点显示
+    this.trajCtrl(prevProps.currentChar)
+  }
+
+  trajCtrl(prevChar){
     if(!this.state.showChar){
       if(this.t) {
         clearInterval(this.t)
@@ -70,7 +73,7 @@ class MainBox extends Component {
       if(this.polyline) this.polyline.paths = []
       return
     }
-    if(prevProps.currentChar>=0&&this.props.currentChar===undefined){
+    if(prevChar>=0&&this.props.currentChar===undefined){
       if(this.t) {
         clearInterval(this.t)
         this.t = null
@@ -78,8 +81,7 @@ class MainBox extends Component {
       if(this.state.showTraj>0)this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
       if(this.graphic) this.graphic.geometry = undefined
       if(this.polyline) this.polyline.paths = []
-      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+this.props.currentDynasty
-    }else if(prevProps.currentChar>=0&&this.props.currentChar>=0&&prevProps.currentChar!==this.props.currentChar){
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
       if(this.t) {
         clearInterval(this.t)
         this.t = null
@@ -89,10 +91,10 @@ class MainBox extends Component {
       if(this.polyline) this.polyline.paths = []
       if(this.view) this.loadingPath()
       if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
-    }else if(prevProps.currentChar || this.props.currentChar){
-      if(this.basePeopleFeatureLayer && prevProps.currentChar!==this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
+    }else if(prevChar || this.props.currentChar){
+      if(this.basePeopleFeatureLayer && prevChar!==this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Poet_ID='+this.props.currentChar
       if(this.state.showTraj===0){
-        console.log('loading...')
+        //console.log('loading...')
         if(this.t) {
           clearInterval(this.t)
           this.t = null
@@ -101,7 +103,7 @@ class MainBox extends Component {
         if(this.polyline) this.polyline.paths = []
         if(this.view) this.loadingPath()
       }else if(this.state.showTraj%2!==0){
-        console.log('showing trajectory...')
+        //console.log('showing trajectory...')
         if(this.state.speedChange){
           if(this.t) {
             clearInterval(this.t)
@@ -112,19 +114,19 @@ class MainBox extends Component {
           if(!this.t)this.play()
         }
       }else{
-        console.log('pausing...')
+        //console.log('pausing...')
         if(this.t) {
           clearInterval(this.t)
           this.t = null
         }
       }
     }else{
-      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Sequence=0 and Dynasty_ID='+this.props.currentDynasty
+      if(this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
     }
   }
 
   play(){
-    //this.view.goTo({center:this.traj[0],zoom:6},{duration:500,easing:'in-out-expo'})
+    if(this.state.showTraj===1)this.view.goTo({center:this.traj[0],zoom:6},{duration:500,easing:'in-out-expo'})
     this.t = setInterval(() => {
         if(this.traj.length>0) {
           let tmp =  this.traj.shift()
@@ -156,10 +158,11 @@ class MainBox extends Component {
         }else{
           clearInterval(this.t)
           this.t=null
-          this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false})
+          this.setState({showTraj:0,bntLabel:'显示轨迹',speedChange:false,isOver:true})
         }
     }, this.state.speed);
   }
+
   loadingPath(){
     this.view.whenLayerView(this.basePeopleFeatureLayer).then(()=>{
       let queryChar = this.basePeopleFeatureLayer.createQuery();
@@ -250,8 +253,8 @@ class MainBox extends Component {
         url: this.basePeopleFeatureUrl,
         id: '0',
         visible: true,
-        renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender,
-        definitionExpression : 'Sequence=0 and Dynasty_ID='+String(this.props.currentDynasty),
+        //renderer: this.props.trigger.heatmap ? heatMapRenderer : simpleMarkerRender,
+        definitionExpression : `Sequence=0 and Dynasty='${this.props.currentDynasty}'`,
       })
 
       this.changeBaseMap = (tileMapUrl) => {
@@ -405,9 +408,6 @@ class MainBox extends Component {
   //trajectory
   handleShowPath(){
     this.setState({showTraj:this.props.currentChar?this.state.showTraj+1:0,bntLabel:this.props.currentChar?this.state.showTraj%2===0?'暂停':'继续':'显示轨迹',speedChange:false})
-  }
-  handleReset(){
-    this.setState({showTraj:0,bntLabel:'重新显示',speedChange:false})
   }
   handleSpeedDown(){
     if(this.state.speed < 191) this.setState({speed:this.state.speed+10,speedChange:true})

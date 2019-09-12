@@ -35,12 +35,8 @@ class App extends Component {
       yearArea: [],
       currentYear: 0,
       currentTileMap: 'topo',
-      isCharDrawerOpen: false,
+      canCharDrawerOpen: false,
       isEventDrawerOpen: false,
-<<<<<<< HEAD
-      currentChar:undefined,
-      currentDynasty:0,
-=======
       isCharSelectChangeToAnother: false,
       isEventSelectChangeToAnother: false,
       isYearSelectChangeToAnother: false,
@@ -48,8 +44,7 @@ class App extends Component {
         heatmap: false,
       },
       currentChar:null,
-      currentDynasty:0
->>>>>>> f0e7cd476e771a42a1a6898571d654960b3e7b25
+      currentDynasty:"夏"
     }
   }
 
@@ -60,8 +55,8 @@ class App extends Component {
   onSelectTileMap(currentTileMap) {
     this.setState({ currentTileMap })
   }
-  onSelectDynasty(ID){
-    this.setState({currentDynasty:ID})
+  onSelectDynasty(dynasty){
+    this.setState({currentDynasty:dynasty})
   }
   processYearArea(data) {
     const result = [];
@@ -91,7 +86,8 @@ class App extends Component {
   }
   //handle character selection
   onSelectChar(FID){
-    this.setState({currentChar:FID})
+    this.setState({currentChar:FID,canCharDrawerOpen:FID>=0?true:false})
+    
   }
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
@@ -153,12 +149,10 @@ class App extends Component {
             isShow={this.state.isEventDrawerOpen}
             eventSelected={this.state.eventSelectedKeys[0]} />
           <ToolBox>
-            <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={(b) => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
           </ToolBox>
-          <CharDrawer
-            chars={this.state.charProfiles}
-            isShow={this.state.isCharDrawerOpen}
-            charSelected={this.state.charSelectedKeys[0]} />
+          <CharDrawer canShow={this.state.canCharDrawerOpen} 
+            charProfile={this.state.charProfiles&&this.state.currentChar!==null?[].concat(...Object.values(this.state.charProfiles))[this.state.currentChar]:undefined}/>
         </Layout>
 
       </div>

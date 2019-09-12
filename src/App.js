@@ -25,9 +25,6 @@ class App extends Component {
   constructor() {
     super()
     this.state = {
-      yearSelectedKeys: [],
-      charSelectedKeys: [],
-      eventSelectedKeys: [],
       charProfiles: [],
       years: [],
       events: [],
@@ -35,8 +32,6 @@ class App extends Component {
       yearArea: [],
       currentYear: 0,
       currentTileMap: 'topo',
-      canCharDrawerOpen: false,
-      isEventDrawerOpen: false,
       isCharSelectChangeToAnother: false,
       isEventSelectChangeToAnother: false,
       isYearSelectChangeToAnother: false,
@@ -44,7 +39,8 @@ class App extends Component {
         heatmap: false,
       },
       currentChar:null,
-      currentDynasty:"夏"
+      currentDynasty:"夏",
+      currentEvent:null
     }
   }
 
@@ -85,10 +81,15 @@ class App extends Component {
     return data;
   }
   //handle character selection
-  onSelectChar(FID){
-    this.setState({currentChar:FID,canCharDrawerOpen:FID>=0?true:false})
+  onSelectChar(charFID){
+    this.setState({currentChar:charFID})
     
   }
+
+  onSelectEvent(eventFID){
+    this.setState({currentEvent:eventFID})
+  }
+
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
@@ -109,11 +110,6 @@ class App extends Component {
     })
   }
   render() {
-    const exp = []
-    this.state.experience.length && this.state.experience['Tang'].map((e) => {
-      if (e.ID === this.state.charSelectedKeys[0]) exp.push(e)
-      return void 0;
-    })
     return (
       <div className="App">
         <Header />
@@ -127,6 +123,7 @@ class App extends Component {
           onSelectYear={this.onSelectYear.bind(this)}
           onSelectDynasty={this.onSelectDynasty.bind(this)}
           onSelectChar={this.onSelectChar.bind(this)}
+          onSelectEvent={this.onSelectEvent.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
@@ -142,17 +139,13 @@ class App extends Component {
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
             />
-            {exp.length ? <ExpTimeline exp={exp} /> : null}
           </Content>
-          <EventDrawer
-            events={this.state.events}
-            isShow={this.state.isEventDrawerOpen}
-            eventSelected={this.state.eventSelectedKeys[0]} />
+
           <ToolBox>
             <span style={{ paddingRight: 20 }}>热力图</span><Switch onChange={(b) => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
           </ToolBox>
-          <CharDrawer canShow={this.state.canCharDrawerOpen} 
-            charProfile={this.state.charProfiles&&this.state.currentChar!==null?[].concat(...Object.values(this.state.charProfiles))[this.state.currentChar]:undefined}/>
+          <EventDrawer eventProfile={this.state.events&&this.state.currentEvent!==null?[].concat(...Object.values(this.state.events))[this.state.currentEvent]:undefined}/>
+          <CharDrawer charProfile={this.state.charProfiles&&this.state.currentChar!==null?[].concat(...Object.values(this.state.charProfiles))[this.state.currentChar]:undefined}/>
         </Layout>
 
       </div>

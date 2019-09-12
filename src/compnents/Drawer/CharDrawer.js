@@ -7,7 +7,7 @@ class CharDrawer extends Component{
     this.state = {
       visible:false
     }
-    this.iconURL = '../../icon/'
+    this.iconURL = 'icon/'
   }
 
   render(){
@@ -15,11 +15,11 @@ class CharDrawer extends Component{
     
     if(this.props.charProfile){
       let charProfile = this.props.charProfile
-      console.log(this.iconURL+charProfile.FID+'.jpg')
+      //let icon=require(this.iconURL+charProfile.FID+'.jpg')
       content = (
         <div>
            <div style={{align:'center',textAlign:'center'}}>
-            <img src={this.iconURL+charProfile.FID+'.jpg'}/>
+            <img src={[this.iconURL+charProfile.FID+'.jpg']} height={200} width={200}/>
           </div>
           <hr/>
           <p>{`姓名：${charProfile.Name}`}</p>

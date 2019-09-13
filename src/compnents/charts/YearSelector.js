@@ -12,6 +12,7 @@ class YearSelector extends Component {
         this.charts = React.createRef();
         this.lineChartsInstance = null;
         this.option = null;
+
     }
 
     renderChart(data) {
@@ -51,11 +52,11 @@ class YearSelector extends Component {
                 }),
                 areaStyle: {}
             }
-        });
+        },true);
         this.lineChartsInstance.on('click', 'series', e => {
             const index = e.dataIndex;
             const name = e.name
-            //console.log(e)
+            console.log(e)
             this.props.onClick(index,name);
         });
     }
@@ -67,6 +68,8 @@ class YearSelector extends Component {
     }
 
     componentDidUpdate() {
+        //console.log(this.renderChart)
+        
         if (this.props.data.length) {
             this.renderChart.call(this, this.props.data);
         }

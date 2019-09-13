@@ -92,6 +92,7 @@ class App extends Component {
   onSelectEvent(eventFID) {
     this.setState({ currentEvent: eventFID })
   }
+
   componentDidMount() {
     const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
     const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())

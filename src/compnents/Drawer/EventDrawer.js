@@ -30,7 +30,7 @@ class EventDrawer extends Component{
     }
     return(
       <div>
-        <Button style={{position:'absolute',right:70,bottom:180}} type="primary" onClick={()=>{this.setState({visible:!this.state.visible})}}>
+        <Button style={{position:'absolute',right:350,top:25}} type="primary" onClick={()=>{this.setState({visible:!this.state.visible})}}>
           事件简介
         </Button>
         <Drawer

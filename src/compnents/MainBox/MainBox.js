@@ -44,7 +44,7 @@ class MainBox extends Component {
     this.stopUpdate = true;
     this.selectGrphics = [];
     this.changeBaseMap = () => { };
-    this.charHighlight = []
+
   }
   componentWillMount() {
     this.initMap()
@@ -59,7 +59,7 @@ class MainBox extends Component {
   }
   componentDidUpdate(prevProps, prevState) {
     //console.log('update state:', prevState.selectedBoundary,this.state.selectedBoundary);
-    console.log('update props:', prevProps.currentYear,this.props.currentYear);
+    //console.log('update props:', prevProps.currentYear,this.props.currentYear);
     if(prevProps.currentYear !== this.props.currentYear) this.changeBoundaryLayer.call(this, this.props.currentYear);
     if (prevProps.currentTileMap !== this.props.currentTileMap) {
       console.log(this.props.currentTileMap)
@@ -377,19 +377,19 @@ class MainBox extends Component {
     this.setState({ yearModal: true });
   }
 
-  handleSliderChange(value) {
-    if (!this.map) {
-      return 0;
-    }
-    // TO FIX: slider切换年份不生效
-    this.changeBoundaryLayer(value);
-    this.setState({ sliderValue: value });
-  }
+  // handleSliderChange(value) {
+  //   if (!this.map) {
+  //     return 0;
+  //   }
+  //   // TO FIX: slider切换年份不生效
+  //   this.changeBoundaryLayer(value);
+  //   this.setState({ sliderValue: value });
+  // }
 
   handleLayerPlay() {
     this.stopUpdate = !this.stopUpdate
     this.setState({ isPlay: !this.state.isPlay })
-
+    
     this.view.goTo({ center: [115, 32.1], zoom: 4 }, { duration: 1000, easing: 'in-out-expo' })
     let i = 0
     if (this.playTimer) {
@@ -456,6 +456,7 @@ class MainBox extends Component {
 
   }
   render() {
+    //console.log(this.props.startAndEnd)
     let timeline = (
       <Timeline>
         <div className={'charExp'}>人物经历</div>

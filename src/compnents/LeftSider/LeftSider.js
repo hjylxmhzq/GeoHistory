@@ -135,24 +135,24 @@ class LeftSider extends Component {
       <div className={s.chartContainer}>
           <YearSelector onClick={this.handleBarClick.bind(this)} data={this.props.yearArea} />
       </div>
-        {/* <Button
-            style={{ position: 'absolute', right: 70, bottom: 80 }}
-            onClick={this.openYearModal.bind(this)}>年代变化</Button>
-          <YearModal
-            visible={this.state.yearModal}
-            handleCancel={() => this.setState({ yearModal: false })}
-            handleOk={() => this.setState({ yearModal: false })}
-          >
-            <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
-            {
-              this.state.showWiki &&
-              <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.props.currentYear)) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
-            }
-            <YearSelector
-              style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
-              onClick={this.props.onSelectYear}
-              data={this.props.yearArea} />
-          </YearModal> */}
+      <div className={s.yearButton}>
+        <Button onClick={this.openYearModal.bind(this)}>年代变化</Button>
+        <YearModal
+          visible={this.state.showYearModal}
+          handleCancel={() => this.setState({ showYearModal: false })}
+          handleOk={() => this.setState({ showYearModal: false })}
+        >
+          <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
+          {
+            this.state.showWiki &&
+            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.state.currentYear[0])) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
+          }
+          <YearSelector
+            style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
+            onClick={this.handleBarClick.bind(this)}
+            data={this.props.yearArea} />
+        </YearModal>
+      </div>
 
       </div>
     );

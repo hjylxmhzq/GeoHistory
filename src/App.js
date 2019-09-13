@@ -35,7 +35,8 @@ class App extends Component {
         toolbar: true,
         comment: true,
         showChar: true,
-        showExp: false
+        showExp: false,
+        showOther: true
       },
       currentYear: 0,
       currentTileMap: 'topo',
@@ -100,7 +101,7 @@ class App extends Component {
     const experienceData = fetch(staticPath + 'json/experience.json').then(res => res.json())
     const yearArea = fetch(staticPath + 'json/area.json').then(res => res.json())
     Promise.all([yearData, profileData, eventData, experienceData, yearArea]).then((dataList) => {
-      //console.log(dataList)
+      console.log(dataList)
       this.setState({
         years: this.processYear(dataList[0]),
         charProfiles: dataList[1],
@@ -154,6 +155,10 @@ class App extends Component {
           <ToolBox>
             <div className="toolbox_item">
               <span>人物人生轨迹面板</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showExp: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            </div>
+            <hr />
+            <div className="toolbox_item">
+              <span>显示其他国家</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showOther: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
             </div>
             <hr />
             <div className="toolbox_item">

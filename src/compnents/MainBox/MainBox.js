@@ -58,8 +58,6 @@ class MainBox extends Component {
     });
   }
   componentDidUpdate(prevProps, prevState) {
-    //console.log('update state:', prevState.selectedBoundary,this.state.selectedBoundary);
-    //console.log('update props:', prevProps.currentYear,this.props.currentYear);
     if(prevProps.currentYear !== this.props.currentYear) this.changeBoundaryLayer.call(this, this.props.currentYear);
     if (prevProps.currentTileMap !== this.props.currentTileMap) {
       console.log(this.props.currentTileMap)
@@ -82,6 +80,12 @@ class MainBox extends Component {
     //人物点显示
     this.trajCtrl(prevProps.currentChar);
     this.basePeopleFeatureLayer && (this.basePeopleFeatureLayer.visible = this.props.trigger.showChar);
+    //
+    if(this.baseBoundaryFeatureLayer){
+      if(!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `Name='${this.props.currentDynasty}'`
+      else this.baseBoundaryFeatureLayer.definitionExpression = undefined
+    }
+    
   }
 
   trajCtrl(prevChar) {
@@ -349,7 +353,6 @@ class MainBox extends Component {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
-    console.log('change', index,name)
     if (this.baseEventFeatureLayer) {
       if (this.props.trigger.eventHeatmap) {
         eventLayerOption.renderer = heatMapRenderer;
@@ -458,7 +461,7 @@ class MainBox extends Component {
   render() {
     //console.log(this.props.startAndEnd)
     let timeline = (
-      <Timeline>
+      <Timeline >
         <div className={'charExp'}>人物经历</div>
         {this.props.currentChar>=0?this.props.experience.map((e,idx)=>{
           return (<Timeline.Item 
@@ -483,7 +486,7 @@ class MainBox extends Component {
           </ButtonGroup>
         </div>
         <div className={s['play_button']}>
-          <Button onClick={this.handleLayerPlay.bind(this)} ghost icon={this.state.isPlay ? 'pause' : 'caret-right'}>
+          <Button onClick={this.handleLayerPlay.bind(this)} ghost icon={this.state.isPlay ? 'loading' : 'caret-right'}>
             {this.state.playControllerText}
           </Button>
         </div>

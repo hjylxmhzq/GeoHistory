@@ -146,3 +146,6 @@
 .tool_item_text {
   padding: 30px;
 }
+.ant-dropdown-menu.ant-dropdown-menu-light.ant-dropdown-menu-root.ant-dropdown-menu-vertical{
+  overflow: hidden;
+}

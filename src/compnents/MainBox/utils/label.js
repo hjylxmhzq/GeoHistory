@@ -7,7 +7,7 @@ export const labelingInfo = [
             haloColor: "black",
             font: {  // autocast as new Font()
                 family: "KaiTi",
-                size: 22,
+                size: 18,
             }
         },
         labelPlacement: "above-center",

@@ -39,6 +39,7 @@ export class ToolBox extends React.Component {
           mask={false}
           onMouseLeave={this.onClose}
           getContainer={false}
+          style={{height: 'calc(100% - 64px)', top: 64}}
         >
           {this.props.children}
         </Drawer>

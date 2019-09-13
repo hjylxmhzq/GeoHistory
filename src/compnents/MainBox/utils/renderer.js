@@ -50,16 +50,46 @@ export const heatMapRenderer = {
         { color: "#e0cf40", ratio: 0.913 },
         { color: "#ffff00", ratio: 1 }
     ],
-    maxPixelIntensity: 25,
+    maxPixelIntensity: 65,
     minPixelIntensity: 0
+};
+
+const textSymbol = {
+    type: "text", // autocasts as new TextSymbol()
+    color: "#7A003C",
+    text: "\ue643", // esri-icon-map-pin
+    font: {
+        // autocasts as new Font()
+        size: 26,
+        family: "CalciteWebCoreIcons", // Esri Icon Font
+        weight: 'lighter'
+    }
+};
+
+const textPeopleSymbol = {
+    type: "text", // autocasts as new TextSymbol()
+    color: "#7A003C",
+    text: "\ue675", // esri-icon-map-pin
+    font: {
+        // autocasts as new Font()
+        size: 26,
+        family: "CalciteWebCoreIcons", // Esri Icon Font
+        weight: 'lighter'
+    }
+};
+
+const simpleMarker = {
+    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+    size: 25,
+    color: [125, 255, 255],
 };
 
 export const simpleMarkerRender = {
     type: "simple", // autocasts as new SimpleRenderer()
-    symbol: {
-        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-        size: 25,
-        color: [125, 255, 255],
-        outline: 'blue'
-    }
+    symbol: textSymbol
+};
+
+export const simplePeopleMarkerRender = {
+    type: "simple", // autocasts as new SimpleRenderer()
+    symbol: textPeopleSymbol
 };

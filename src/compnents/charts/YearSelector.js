@@ -15,6 +15,7 @@ class YearSelector extends Component {
     }
 
     renderChart(data) {
+        //console.log(data)
         this.lineChartsInstance = echarts.init(this.charts.current);
         this.lineChartsInstance.setOption(this.option = {
             tooltip: {
@@ -53,7 +54,9 @@ class YearSelector extends Component {
         });
         this.lineChartsInstance.on('click', 'series', e => {
             const index = e.dataIndex;
-            this.props.onClick(index);
+            const name = e.name
+            //console.log(e)
+            this.props.onClick(index,name);
         });
     }
 

@@ -2,7 +2,10 @@ import React, { Component } from 'react'
 import { Menu, Dropdown, Button } from 'antd';
 import s from './LeftSider.less';
 import { Select } from 'antd';
-
+import { YearSelector } from '../charts';
+import { YearModal } from '../YearModal/YearModal';
+import Search from '../Search';
+import { searchKey, searchName } from '../MainBox/utils/timeMap';
 const { Option } = Select;
 const { SubMenu } = Menu;
 
@@ -12,15 +15,12 @@ class LeftSider extends Component {
     this.state = {
       collapsed: false,
       yearLabel: undefined,
-      yearSelectedKeys: [],
-      eventSelectedKeys: [],
-      charSelectedKeys: [],
+      showYearModal: false,
       currentYear: ['夏', '-2100年'],
       currentPeople: null,
       currentEvent: null
     };
   }
-
 
   handleEventSelect(eventFID) {
     if(this.props.onSelectEvent) this.props.onSelectEvent(eventFID)
@@ -31,14 +31,28 @@ class LeftSider extends Component {
     this.setState({ currentPeople: charFID });
   }
   handleYearSelect(dynasty, year, idx) {
+    console.log(dynasty,year,idx)
     if(this.props.onSelectDynasty) {
       this.props.onSelectDynasty(dynasty)
     }
     if(this.props.onSelectYear) this.props.onSelectYear(idx);
     this.setState({ currentYear: [dynasty, year]});
   }
+
+  handleBarClick(idx,name){
+    if(name.split(" ").toString()+"年"!==this.state.currentYear.toString()){
+      let tmp = name.split(" ")
+      tmp[1]+='年'
+      this.setState({currentYear:tmp})
+      this.handleYearSelect(tmp[0],tmp[1],idx)
+    }
+  }
+  openYearModal() {
+    this.setState({ showYearModal: true });
+  }
+
   render() {
-    //console.log(this.props.years)
+
     const years = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
@@ -103,6 +117,7 @@ class LeftSider extends Component {
       </Menu>
     );
     return (
+      <div>
       <div className={s.selectors}>
         <div>
           <Dropdown overlay={years} trigger={['click']}>
@@ -116,6 +131,29 @@ class LeftSider extends Component {
             <Button>{`底图: ${this.props.tilesMap[this.props.currentTile] || '底图'}`}</Button>
           </Dropdown>
         </div>
+      </div>
+      <div className={s.chartContainer}>
+          <YearSelector onClick={this.handleBarClick.bind(this)} data={this.props.yearArea} />
+      </div>
+        {/* <Button
+            style={{ position: 'absolute', right: 70, bottom: 80 }}
+            onClick={this.openYearModal.bind(this)}>年代变化</Button>
+          <YearModal
+            visible={this.state.yearModal}
+            handleCancel={() => this.setState({ yearModal: false })}
+            handleOk={() => this.setState({ yearModal: false })}
+          >
+            <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
+            {
+              this.state.showWiki &&
+              <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.props.currentYear)) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
+            }
+            <YearSelector
+              style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
+              onClick={this.props.onSelectYear}
+              data={this.props.yearArea} />
+          </YearModal> */}
+
       </div>
     );
   }

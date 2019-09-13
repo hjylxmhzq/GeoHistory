@@ -109,7 +109,7 @@
   overflow-y: auto
 }
 .ant-timeline-item-content:hover{
-  color: deepskyblue;
+  color: #4b7255;
   cursor: pointer;
   transition: 0.2s;
   transition-duration:0.5s;

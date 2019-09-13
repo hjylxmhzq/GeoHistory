@@ -130,7 +130,7 @@ class LeftSider extends Component {
         <div>{events}</div>
         <div>
           <Dropdown overlay={tiles} trigger={['click']}>
-            <Button>{`底图: ${this.props.tilesMap[this.props.currentTile] || '底图'}`}</Button>
+            <Button>{`底图: ${this.props.tilesMap[this.props.currentTile] || 'Community'}`}</Button>
           </Dropdown>
         </div>
       </div>

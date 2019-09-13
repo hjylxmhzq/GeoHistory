@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Switch, Timeline, Empty, Icon } from 'antd';
+import { Button, Switch, Timeline, Empty, Icon,message } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, heatMapRenderer, simpleMarkerRender, simplePeopleMarkerRender, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
@@ -360,13 +360,13 @@ class MainBox extends Component {
         eventLayerOption.renderer = simpleMarkerRender;
       }
     }
-    // if (this.basePeopleFeatureLayer) {
-    //   if (this.props.trigger.heatmap) {
-    //     peopleLayerOption.renderer = heatMapRenderer;
-    //   } else {
-    //     peopleLayerOption.renderer = simplePeopleMarkerRender;
-    //   }
-    // }
+    if (this.basePeopleFeatureLayer) {
+      if (this.props.trigger.heatmap) {
+        peopleLayerOption.renderer = heatMapRenderer;
+      } else {
+        peopleLayerOption.renderer = simplePeopleMarkerRender;
+      }
+    }
     boundaryLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + index;
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
@@ -401,7 +401,7 @@ class MainBox extends Component {
       this.setState({ playControllerText: '播放边界变化', isPlay: false })
       return;
     }
-    this.setState({ playControllerText: '暂停播放', isPlay: true })
+    this.setState({ playControllerText: '\u3000暂停播放\u3000', isPlay: true })
     this.playTimer = setInterval(() => {
       if (i < BOUNDARY_LAYER_NUM) {
         if (i) {
@@ -422,17 +422,11 @@ class MainBox extends Component {
   }
 
   //人物开关
-  handleCharSwitch() {
-    this.setState({ showChar: !this.state.showChar })
-    this.basePeopleFeatureLayer.visible = !this.state.showChar
-  }
-  //经历开关
-  handleExpSwitch() {
-    this.setState({ showExp: !this.state.showExp })
-  }
+  
   //trajectory
   handleShowPath() {
-    this.setState({ showTraj: this.props.currentChar ? this.state.showTraj + 1 : 0, bntLabel: this.props.currentChar ? this.state.showTraj % 2 === 0 ? '暂停' : '继续' : '显示轨迹', speedChange: false })
+    if(this.props.currentChar===null || this.props.currentChar===undefined) message.error('请选择人物',2);
+    this.setState({ showTraj: this.props.currentChar ? this.state.showTraj + 1 : 0, bntLabel: this.props.currentChar ? this.state.showTraj % 2 === 0 ? '暂\u3000停\u3000 ' : '继\u3000续\u3000 ' : '显示轨迹', speedChange: false })
   }
   handleSpeedDown() {
     if (this.state.speed < 191) this.setState({ speed: this.state.speed + 10, speedChange: true })
@@ -478,15 +472,15 @@ class MainBox extends Component {
 
         {this.props.trigger.showExp ? timeline : undefined}
         <div className={s['traj_set']}>
-          <Button ghost icon={'caret-right'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
+          <Button icon={this.state.showTraj%2===0?'caret-right':'loading'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
           <ButtonGroup>
-            <Button ghost icon={'step-backward'} onClick={this.handleSpeedDown.bind(this)}></Button>
-            <Button ghost>{'×' + ((101 - this.state.speed) / 100 + 1).toFixed(1)}</Button>
-            <Button ghost icon={'step-forward'} onClick={this.handleSpeedUp.bind(this)}></Button>
+            <Button icon={'step-backward'} onClick={this.handleSpeedDown.bind(this)}></Button>
+            <Button>{'×' + ((101 - this.state.speed) / 100 + 1).toFixed(1)}</Button>
+            <Button icon={'step-forward'} onClick={this.handleSpeedUp.bind(this)}></Button>
           </ButtonGroup>
         </div>
         <div className={s['play_button']}>
-          <Button onClick={this.handleLayerPlay.bind(this)} ghost icon={this.state.isPlay ? 'loading' : 'caret-right'}>
+          <Button onClick={this.handleLayerPlay.bind(this)} icon={this.state.isPlay ? 'loading' : 'caret-right'}>
             {this.state.playControllerText}
           </Button>
         </div>

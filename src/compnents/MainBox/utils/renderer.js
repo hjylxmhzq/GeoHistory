@@ -7,28 +7,44 @@ export const renderer = {
         value: '0',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [51, 51, 204, 0.5]
+            color: [51, 51, 204, 0.5],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.5],
+                width: "0.5px"
+            }
         }
     }, {
         // All features with value of "East" will be green
         value: '1',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [151, 51, 204, 0.5]
+            color: [151, 51, 204, 0.5],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.5],
+                width: "0.5px"
+            }
         }
     }, {
         // All features with value of "South" will be red
         value: '2',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [51, 51, 44, 0.5]
+            color: [51, 51, 44, 0.5],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.5],
+                width: "0.5px"
+            }
         }
     }, {
         // All features with value of "West" will be yellow
         value: '3',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [251, 51, 204, 0.5]
+            color: [251, 51, 204, 0.5],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.5],
+                width: "0.5px"
+            }
         }
     }]
 };
@@ -56,11 +72,11 @@ export const heatMapRenderer = {
 
 const textSymbol = {
     type: "text", // autocasts as new TextSymbol()
-    color: "#7A003C",
+    color: "#4e2d87",
     text: "\ue643", // esri-icon-map-pin
     font: {
         // autocasts as new Font()
-        size: 26,
+        size: 22,
         family: "CalciteWebCoreIcons", // Esri Icon Font
         weight: 'lighter'
     }
@@ -68,11 +84,11 @@ const textSymbol = {
 
 const textPeopleSymbol = {
     type: "text", // autocasts as new TextSymbol()
-    color: "#7A003C",
+    color: "#c29f80",
     text: "\ue675", // esri-icon-map-pin
     font: {
         // autocasts as new Font()
-        size: 26,
+        size: 22,
         family: "CalciteWebCoreIcons", // Esri Icon Font
         weight: 'lighter'
     }

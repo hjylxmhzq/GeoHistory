@@ -39,10 +39,10 @@ class App extends Component {
         showExp: false,
         showOther: true
       },
-      currentYear: 0,
+      currentYear: 69,
       currentTileMap: 'topo',
       currentChar: null,
-      currentDynasty: "夏",
+      currentDynasty: "唐",
       currentEvent: null,
     }
   }
@@ -116,6 +116,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this);
     let experience = []
     let trash = null
     if (this.state.experience && this.state.currentChar !== null) {
@@ -145,6 +146,9 @@ class App extends Component {
               events={this.state.events}
               yearArea={this.state.yearArea}
               onSelectYear={this.onSelectYear.bind(this)}
+              onSelectDynasty={this.onSelectDynasty.bind(this)}
+              onSelectChar={this.onSelectChar.bind(this)}
+              onSelectEvent={this.onSelectEvent.bind(this)}
               currentYear={this.state.currentYear}
               currentTileMap={this.state.currentTileMap}
               trigger={this.state.Trigger}
@@ -186,7 +190,7 @@ class App extends Component {
               <span>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
           </ToolBox>
-          <EventDrawer eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...Object.values(this.state.events))[this.state.currentEvent] : undefined} />
+          <EventDrawer eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...this.state.events[this.state.currentDynasty])[this.state.currentEvent] : undefined} />
           <CharDrawer charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
         </Layout>
 

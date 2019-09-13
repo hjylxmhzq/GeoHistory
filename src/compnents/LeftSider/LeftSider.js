@@ -17,7 +17,7 @@ class LeftSider extends Component {
       yearLabel: undefined,
       showYearModal: false,
       showWiki:false,
-      currentYear: ['夏', '-2100年'],
+      currentYear: ['唐', '619年'],
       currentPeople: null,
       currentEvent: null
     };

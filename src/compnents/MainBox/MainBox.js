@@ -57,14 +57,25 @@ class MainBox extends Component {
       location: mapPoint, // Set the location of the popup to the clicked location
     });
   }
+  onSearchSelect(action) {
+    console.log('action', action);
+    switch (action.type) {
+      case 0: this.props.onSelectDynasty(action.payload); break;
+      case 1: this.props.onSelectChar(action.payload); break;
+      case 2: this.props.onSelectEvent(action.payload); break;
+      case 3: this.props.onSelectYear(action.payload); break;
+    }
+  }
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.currentYear !== this.props.currentYear) this.changeBoundaryLayer.call(this, this.props.currentYear);
+    if (prevProps.currentYear !== this.props.currentYear ||
+      prevProps.trigger.eventHeatmap !== this.props.trigger.eventHeatmap ||
+      prevProps.trigger.heatmap !== this.props.trigger.heatmap) this.changeBoundaryLayer.call(this, this.props.currentYear);
     if (prevProps.currentTileMap !== this.props.currentTileMap) {
       console.log(this.props.currentTileMap)
       this.changeBaseMap(this.props.currentTileMap);
     }
     if (prevState.selectedBoundary !== this.state.selectedBoundary) {
-      
+
       this.setState({ rightDrawShow: true });
     }
     // trigger start
@@ -81,11 +92,11 @@ class MainBox extends Component {
     this.trajCtrl(prevProps.currentChar);
     this.basePeopleFeatureLayer && (this.basePeopleFeatureLayer.visible = this.props.trigger.showChar);
     //
-    if(this.baseBoundaryFeatureLayer){
-      if(!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `Name='${this.props.currentDynasty}'`
+    if (this.baseBoundaryFeatureLayer) {
+      if (!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `Name='${this.props.currentDynasty}'`
       else this.baseBoundaryFeatureLayer.definitionExpression = undefined
     }
-    
+
   }
 
   trajCtrl(prevChar) {
@@ -172,11 +183,11 @@ class MainBox extends Component {
             this.basePeopleFeatureLayer.queryFeatures(query).then((result) => {
               //this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID='+this.props.currentChar+' and Sequence<='+(result.features.length-this.nodeIdx.length-1)
               this.setState({ expIdx: this.state.expIdx + 1 }, () => { })
-              let feature = result.features[result.features.length-this.nodeIdx.length-1]
+              let feature = result.features[result.features.length - this.nodeIdx.length - 1]
               let highlight = layerView.highlight(feature)
-              setTimeout(()=>{
+              setTimeout(() => {
                 highlight.remove()
-              },1000)
+              }, 1000)
             })
           });
         } else {
@@ -349,7 +360,7 @@ class MainBox extends Component {
     })
   }
 
-  changeBoundaryLayer(index,name) {
+  changeBoundaryLayer(index, name) {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
@@ -372,6 +383,7 @@ class MainBox extends Component {
     const eventLayerIndex = searchKey(index);
     eventLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
+    this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
     if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
     this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer, this.baseBoundaryFeatureLayer];
   }
@@ -392,7 +404,7 @@ class MainBox extends Component {
   handleLayerPlay() {
     this.stopUpdate = !this.stopUpdate
     this.setState({ isPlay: !this.state.isPlay })
-    
+
     this.view.goTo({ center: [115, 32.1], zoom: 4 }, { duration: 1000, easing: 'in-out-expo' })
     let i = 0
     if (this.playTimer) {
@@ -457,13 +469,13 @@ class MainBox extends Component {
     let timeline = (
       <Timeline >
         <div className={'charExp'}>人物经历</div>
-        {this.props.currentChar>=0?this.props.experience.map((e,idx)=>{
-          return (<Timeline.Item 
-                    onClick={this.handleExpNav.bind(this,idx)}
-                    style={{color:this.state.expIdx===idx?'deepskyblue':''}} 
-                    dot={idx===this.state.expIdx?<Icon type="loading" style={{fontSize:'20px'}}/>:undefined} >
-          {e.Year+'年，'+e.Place+'，'+e.Content}</Timeline.Item>)
-        }):<Empty description={'请选择人物'}/>}
+        {this.props.currentChar >= 0 ? this.props.experience.map((e, idx) => {
+          return (<Timeline.Item
+            onClick={this.handleExpNav.bind(this, idx)}
+            style={{ color: this.state.expIdx === idx ? 'deepskyblue' : '' }}
+            dot={idx === this.state.expIdx ? <Icon type="loading" style={{ fontSize: '20px' }} /> : undefined} >
+            {e.Year + '年，' + e.Place + '，' + e.Content}</Timeline.Item>)
+        }) : <Empty description={'请选择人物'} />}
       </Timeline>
     )
     return (
@@ -528,6 +540,7 @@ class MainBox extends Component {
           year={this.props.years}
           event={this.props.events}
           people={this.props.charProfiles}
+          onSelect={this.onSearchSelect.bind(this)}
         />
         {/* <Slider
           years={this.props.years}

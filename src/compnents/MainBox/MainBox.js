@@ -9,7 +9,7 @@ import config from '../../config';
 import { searchKey, searchName } from './utils/timeMap';
 import { RightDrawer } from '../Drawer/Common';
 import { YearModal } from '../YearModal/YearModal';
-import { eventPopUpTemplate } from './utils/popUpTemplate';
+import { eventPopUpTemplate,peoplePopUpTemplate } from './utils/popUpTemplate';
 
 const ButtonGroup = Button.Group;
 const BOUNDARY_LAYER_NUM = 121;
@@ -92,8 +92,8 @@ class MainBox extends Component {
     this.trajCtrl(prevProps.currentChar);
     this.basePeopleFeatureLayer && (this.basePeopleFeatureLayer.visible = this.props.trigger.showChar);
     //
-    if (this.baseBoundaryFeatureLayer) {
-      if (!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `Name='${this.props.currentDynasty}'`
+    if(this.baseBoundaryFeatureLayer){
+      if(!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `China>0`
       else this.baseBoundaryFeatureLayer.definitionExpression = undefined
     }
 
@@ -119,16 +119,17 @@ class MainBox extends Component {
       if (this.graphic) this.graphic.geometry = undefined
       if (this.polyline) this.polyline.paths = []
       if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
-      if (this.t) {
-        clearInterval(this.t)
-        this.t = null
-      }
-      if (this.state.showTraj > 0) this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
-      if (this.graphic) this.graphic.geometry = undefined
-      if (this.polyline) this.polyline.paths = []
-      if (this.view) this.loadingPath()
-      if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID=' + this.props.currentChar
-    } else if (prevChar || this.props.currentChar) {
+    }else if(prevChar >= 0 && this.props.currentChar >= 0 && prevChar!==this.props.currentChar){
+        if (this.t) {
+          clearInterval(this.t)
+          this.t = null
+        }
+        if (this.state.showTraj > 0) this.setState({ showTraj: 0, bntLabel: '显示轨迹', speedChange: false })
+        if (this.graphic) this.graphic.geometry = undefined
+        if (this.polyline) this.polyline.paths = []
+        if (this.view) this.loadingPath()
+        if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID=' + this.props.currentChar
+     }else if (prevChar || this.props.currentChar) {
       if (this.basePeopleFeatureLayer && prevChar !== this.props.currentChar) this.basePeopleFeatureLayer.definitionExpression = 'Poet_ID=' + this.props.currentChar
       if (this.state.showTraj === 0) {
         //console.log('loading...')
@@ -187,7 +188,7 @@ class MainBox extends Component {
               let highlight = layerView.highlight(feature)
               setTimeout(() => {
                 highlight.remove()
-              }, 1000)
+              },700)
             })
           });
         } else {
@@ -348,14 +349,6 @@ class MainBox extends Component {
       this.view.ui.add(compass)
       this.view.ui.add(scaleBar, 'bottom-right');
       this.view.ui.add(this.sketch, "top-left");
-      let len = this.map.layers.items.length
-      let queryLayer = this.map.layers.items[len - 1]
-      this.view.when(function () {
-        return queryLayer.when(function () {
-          let query = queryLayer.createQuery()
-          return queryLayer.queryFeatures(query)
-        })
-      })
 
     })
   }

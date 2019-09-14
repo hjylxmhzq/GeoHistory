@@ -124,7 +124,7 @@ class LeftSider extends Component {
       <div className={s.selectors}>
         <div>
           <Dropdown overlay={years} trigger={['click']} >
-            <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
+            <Button type={'primary'} >{this.state.currentYear.join(' ') || '年代边界'}</Button>
           </Dropdown>
         </div>
         <div>{people}</div>
@@ -139,7 +139,7 @@ class LeftSider extends Component {
           <YearSelector onClick={this.handleBarClick.bind(this)}  data={this.props.yearArea} />
       </div>
       <div className={s.yearModal}>
-        <Button onClick={this.openYearModal.bind(this)}>年代变化</Button>
+        <Button type={'primary'} onClick={this.openYearModal.bind(this)}>年代百科</Button>
         <YearModal
           visible={this.state.showYearModal}
           handleCancel={() => this.setState({ showYearModal: false })}
@@ -148,10 +148,10 @@ class LeftSider extends Component {
           <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
           {
             this.state.showWiki &&
-            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + wikiname} height="600px" width="1240px" seamless frameborder="0"></iframe>
+            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + wikiname} height="600px" width="1240px" align="absmiddle" seamless frameborder="0"></iframe>
           }
           <YearSelector
-            style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
+            style={{ position: 'relative', left: 0, right: 0, bottom: 0}}
             onClick={this.handleBarClick.bind(this)}
             data={this.props.yearArea} />
         </YearModal>

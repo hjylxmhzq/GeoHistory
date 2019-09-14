@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button,Timeline, Empty, Icon,message } from 'antd';
+import { Button,Timeline, Empty, Icon,message,Slider } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, heatMapRenderer, simpleMarkerRender, simplePeopleMarkerRender, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
@@ -31,7 +31,7 @@ class MainBox extends Component {
       showTraj: 0,
       bntLabel: '显示轨迹',
       speedChange: false,
-      speed: 101,
+      speed: 100,
       expIdx: -1,
       showExp: false,
     }
@@ -437,11 +437,8 @@ class MainBox extends Component {
     if(this.props.currentChar===null || this.props.currentChar===undefined) message.error('请选择人物',2);
     this.setState({ showTraj: this.props.currentChar ? this.state.showTraj + 1 : 0, bntLabel: this.props.currentChar ? this.state.showTraj % 2 === 0 ? '暂\u3000停\u3000 ' : '继\u3000续\u3000 ' : '显示轨迹', speedChange: false })
   }
-  handleSpeedDown() {
-    if (this.state.speed < 191) this.setState({ speed: this.state.speed + 10, speedChange: true })
-  }
-  handleSpeedUp() {
-    if (this.state.speed > 1) this.setState({ speed: this.state.speed - 10, speedChange: true })
+  handleSpeedChange(speed){
+    this.setState({ speed: (2.1-speed)*100, speedChange: true })
   }
   //
   handleExpNav(idx) {
@@ -463,6 +460,11 @@ class MainBox extends Component {
   }
   render() {
     //console.log(this.props.startAndEnd)
+    const speedMark = {
+      0:'Speed',
+      1:'×1',
+      2:'×2'
+    }
     let timeline = (
       <Timeline >
         <div className={'charExp'}>人物经历</div>
@@ -481,15 +483,11 @@ class MainBox extends Component {
 
         {this.props.trigger.showExp ? timeline : undefined}
         <div className={s['traj_set']}>
-          <Button icon={this.state.showTraj%2===0?'caret-right':'loading'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
-          <ButtonGroup>
-            <Button icon={'step-backward'} onClick={this.handleSpeedDown.bind(this)}></Button>
-            <Button>{'×' + ((101 - this.state.speed) / 100 + 1).toFixed(1)}</Button>
-            <Button icon={'step-forward'} onClick={this.handleSpeedUp.bind(this)}></Button>
-          </ButtonGroup>
+          <Button type={'primary'}  icon={this.state.showTraj%2===0?'caret-right':'loading'} onClick={this.handleShowPath.bind(this)}>{this.state.bntLabel}</Button>
+          <Slider included={false} marks={speedMark} tooltipPlacement={'bottom'} min={0} max={2} step={0.1} defaultValue={1} onAfterChange={this.handleSpeedChange.bind(this)}></Slider>
         </div>
         <div className={s['play_button']}>
-          <Button onClick={this.handleLayerPlay.bind(this)} icon={this.state.isPlay ? 'loading' : 'caret-right'}>
+          <Button type={'primary'}  onClick={this.handleLayerPlay.bind(this)} icon={this.state.isPlay ? 'loading' : 'caret-right'}>
             {this.state.playControllerText}
           </Button>
         </div>

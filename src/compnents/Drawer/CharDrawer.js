@@ -40,7 +40,7 @@ class CharDrawer extends Component {
     }
     return (
       <div>
-        <Button style={{ position: 'absolute', right: 450, top: 25 }} type="primary" onClick={() => { this.setState({ visible: !this.state.visible }) }}>
+        <Button style={{ position: 'absolute', right: 430, top: 25 }} type="primary" onClick={() => { this.setState({ visible: !this.state.visible }) }}>
           人物简介
         </Button>
         <Drawer

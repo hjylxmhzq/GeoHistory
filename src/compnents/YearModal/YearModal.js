@@ -7,12 +7,12 @@ export class YearModal extends React.Component {
     return (
       <div>
         <Modal
-          title="Basic Modal"
+          title="年代百科"
           visible={this.props.visible}
           onOk={this.props.handleOk}
           onCancel={this.props.handleCancel}
           centered
-          width={'80%'}
+          width={'60%'}
         >
           {this.props.children}
         </Modal>

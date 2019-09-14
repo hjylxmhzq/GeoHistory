@@ -172,7 +172,7 @@ class MainBox extends Component {
       if (this.traj.length > 0) {
         let tmp = this.traj.shift()
         //console.log(tmp)
-        //this.view.goTo({center:tmp,zoom:6},{duration:1000,easing:'in-out-expo'})
+        this.props.trigger.track && this.view.goTo({center:tmp,zoom:6},{duration:1000,easing:'in-out-expo'})
         this.polyline.paths.push(tmp)
         this.graphic.geometry = this.polyline
         let manifestIdx = this.nodeIdx.shift()

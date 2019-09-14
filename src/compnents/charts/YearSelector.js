@@ -48,7 +48,7 @@ class YearSelector extends Component {
                 name: '疆域面积',
                 type: 'line',
                 data: data.map(function (item) {
-                    return item[1];
+                    return item[1] / 1.56; // 面积数据存在问题，暂时解决
                 }),
                 areaStyle: {}
             }

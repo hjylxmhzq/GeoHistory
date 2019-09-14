@@ -4,6 +4,7 @@ import s from './LeftSider.less';
 import { Select } from 'antd';
 import { YearSelector } from '../charts';
 import { YearModal } from '../YearModal/YearModal';
+import { wikiMap } from './WikiMap';
 import Search from '../Search';
 import { searchKey, searchName } from '../MainBox/utils/timeMap';
 const { Option } = Select;
@@ -54,7 +55,7 @@ class LeftSider extends Component {
   }
 
   render() {
-
+    const wikiname = wikiMap[this.state.currentYear[0]];
     const years = (
       <Menu style={{ maxHeight: 500, overflowY: 'auto' }}>
         {
@@ -147,7 +148,7 @@ class LeftSider extends Component {
           <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
           {
             this.state.showWiki &&
-            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.state.currentYear[0])) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
+            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + wikiname} height="600px" width="1240px" seamless frameborder="0"></iframe>
           }
           <YearSelector
             style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}

@@ -37,7 +37,8 @@ class App extends Component {
         comment: true,
         showChar: true,
         showExp: false,
-        showOther: true
+        showOther: true,
+        track: false
       },
       currentYear: 69,
       currentTileMap: 'topo',
@@ -165,7 +166,6 @@ class App extends Component {
               <span>人物人生轨迹面板</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showExp: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
             <Divider />
-            <Divider />
             <div className="toolbox_item">
               <span>显示其他国家</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showOther: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
             </div>
@@ -184,6 +184,10 @@ class App extends Component {
             <Divider />
             <div className="toolbox_item">
               <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+            </div>
+            <Divider />
+            <div className="toolbox_item">
+              <span>轨迹跟踪</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ track: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
             <Divider />
             <div className="toolbox_item">

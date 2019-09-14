@@ -1,4 +1,4 @@
-import { eventPopUpTemplate, peoplePopUpTemplate } from "./popUpTemplate";
+import { eventPopUpTemplate, peoplePopUpTemplate,boundaryPopUpTemplate } from "./popUpTemplate";
 import { simpleMarkerRender, simplePeopleMarkerRender, renderer } from "./renderer";
 import { labelingInfo } from './label';
 import config from '../../../config';
@@ -11,6 +11,7 @@ export const boundaryLayerOption = {
     url: baseBoundaryFeatureUrl + '69',
     // id: '0',
     visible: true,
+    popupTemplate: boundaryPopUpTemplate,
     renderer,
     labelingInfo
 };

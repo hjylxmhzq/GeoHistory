@@ -376,7 +376,7 @@ class MainBox extends Component {
     const eventLayerIndex = searchKey(index);
     eventLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
-    this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
+    //this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
     if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
     this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer, this.baseBoundaryFeatureLayer];
   }

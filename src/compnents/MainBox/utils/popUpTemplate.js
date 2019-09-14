@@ -91,3 +91,38 @@ export const peoplePopUpTemplate = {
         }
     ]
 };
+
+export const boundaryPopUpTemplate = {
+    title:'国家信息',
+    content:[
+        {
+            type:'fields',
+            fieldInfos:[
+                {
+                    fieldName:'Name',
+                    label:'名称',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Area',
+                    label:'面积（km²）',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'China',
+                    label:'是否属于中国',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                }
+            ]
+        }
+    ]
+};

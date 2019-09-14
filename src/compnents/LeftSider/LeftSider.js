@@ -122,7 +122,7 @@ class LeftSider extends Component {
       <div>
       <div className={s.selectors}>
         <div>
-          <Dropdown overlay={years} trigger={['click']}>
+          <Dropdown overlay={years} trigger={['click']} >
             <Button>{this.state.currentYear.join(' ') || '年代边界'}</Button>
           </Dropdown>
         </div>

@@ -1,5 +1,6 @@
 import React,{Component} from 'react'
 import {Drawer, Button,Empty} from 'antd'
+import { CustomComment } from '../Comment';
 
 class EventDrawer extends Component{
   constructor(){
@@ -42,6 +43,10 @@ class EventDrawer extends Component{
         style={{marginTop:'60px'}}
         >
           {content}
+          {
+            this.props.showComment &&
+            <CustomComment id={this.props.eventProfile ? this.props.eventProfile.HName : '-1'} />
+          }
         </Drawer>
       </div>
   )}

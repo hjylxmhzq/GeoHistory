@@ -190,7 +190,7 @@ class App extends Component {
               <span>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
           </ToolBox>
-          <EventDrawer eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...this.state.events[this.state.currentDynasty])[this.state.currentEvent] : undefined} />
+          <EventDrawer showComment={this.state.Trigger.comment} eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...this.state.events[this.state.currentDynasty])[this.state.currentEvent] : undefined} />
           <CharDrawer showComment={this.state.Trigger.comment} charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
         </Layout>
 

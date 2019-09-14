@@ -36,6 +36,7 @@ class App extends Component {
         toolbar: true,
         comment: true,
         showChar: true,
+        showEvent:true,
         showExp: false,
         showOther: true,
         track: false
@@ -153,6 +154,7 @@ class App extends Component {
               currentYear={this.state.currentYear}
               currentTileMap={this.state.currentTileMap}
               trigger={this.state.Trigger}
+              currentEvent={this.state.currentEvent}
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
               experience={experience}
@@ -171,7 +173,11 @@ class App extends Component {
             </div>
             <Divider />
             <div className="toolbox_item">
-              <span>在地图上显示选中人物</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showChar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+              <span>显示人物</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showChar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+            </div>
+            <Divider />
+            <div className="toolbox_item">
+              <span>显示事件</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showEvent: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
             <Divider />
             <div className="toolbox_item">

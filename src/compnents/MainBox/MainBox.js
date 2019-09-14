@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
-import { Button, Switch, Timeline, Empty, Icon,message } from 'antd';
+import { Button,Timeline, Empty, Icon,message } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, heatMapRenderer, simpleMarkerRender, simplePeopleMarkerRender, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
-import { YearSelector } from '../charts';
 import Search from '../Search';
 import config from '../../config';
 import { searchKey, searchName } from './utils/timeMap';
 import { RightDrawer } from '../Drawer/Common';
-import { YearModal } from '../YearModal/YearModal';
-import { eventPopUpTemplate,peoplePopUpTemplate } from './utils/popUpTemplate';
 
 const ButtonGroup = Button.Group;
 const BOUNDARY_LAYER_NUM = 121;
@@ -30,8 +27,6 @@ class MainBox extends Component {
       rightDrawShow: false,
       showYearModal: false,
       showBoundary: true,
-      showChar: true,
-      showEvent: true,
       selectedEvents: [],
       showTraj: 0,
       bntLabel: '显示轨迹',
@@ -96,7 +91,25 @@ class MainBox extends Component {
       if(!this.props.trigger.showOther) this.baseBoundaryFeatureLayer.definitionExpression = `China>0`
       else this.baseBoundaryFeatureLayer.definitionExpression = undefined
     }
-
+    //事件点显示
+    console.log(this.props.trigger)
+    if(this.baseEventFeatureLayer){
+      this.baseEventFeatureLayer.visible = this.props.trigger.showEvent
+      if(prevProps.currentEvent !== this.props.currentEvent && this.props.currentEvent!==null){
+        this.view.whenLayerView(this.baseEventFeatureLayer).then((layerView) => {
+          let query = this.baseEventFeatureLayer.createQuery();
+          query.where = 'FID=' + this.props.currentEvent
+          this.baseEventFeatureLayer.queryFeatures(query).then((result) => {
+            let feature = result.features[0]
+            this.view.goTo({center:feature.geometry,zoom:7},{duration:1000,easing:'in-out-expo'})
+            let highlight = layerView.highlight(feature)
+            setTimeout(() => {
+              highlight.remove()
+            },1000)
+          })
+        });
+      }
+    }
   }
 
   trajCtrl(prevChar) {
@@ -353,7 +366,7 @@ class MainBox extends Component {
     })
   }
 
-  changeBoundaryLayer(index, name) {
+  changeBoundaryLayer(index) {
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
@@ -374,32 +387,23 @@ class MainBox extends Component {
     boundaryLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + index;
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
-    eventLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
+    eventLayerOption.url = eventLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
     //this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
     if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
-    this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer, this.baseBoundaryFeatureLayer];
+    this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer,this.baseBoundaryFeatureLayer];
   }
 
   openYearModal() {
     this.setState({ yearModal: true });
   }
 
-  // handleSliderChange(value) {
-  //   if (!this.map) {
-  //     return 0;
-  //   }
-  //   // TO FIX: slider切换年份不生效
-  //   this.changeBoundaryLayer(value);
-  //   this.setState({ sliderValue: value });
-  // }
-
   handleLayerPlay() {
     this.stopUpdate = !this.stopUpdate
     this.setState({ isPlay: !this.state.isPlay })
 
     this.view.goTo({ center: [115, 32.1], zoom: 4 }, { duration: 1000, easing: 'in-out-expo' })
-    let i = 0
+    let i = this.props.currentYear
     if (this.playTimer) {
       clearInterval(this.playTimer);
       this.playTimer = null;
@@ -462,7 +466,7 @@ class MainBox extends Component {
     let timeline = (
       <Timeline >
         <div className={'charExp'}>人物经历</div>
-        {this.props.currentChar >= 0 ? this.props.experience.map((e, idx) => {
+        {this.props.currentChar !== null ? this.props.experience.map((e, idx) => {
           return (<Timeline.Item
             onClick={this.handleExpNav.bind(this, idx)}
             style={{ color: this.state.expIdx === idx ? 'deepskyblue' : '' }}
@@ -489,25 +493,6 @@ class MainBox extends Component {
             {this.state.playControllerText}
           </Button>
         </div>
-        {/* <YearSelector onClick={this.changeBoundaryLayer.bind(this)} data={this.props.yearArea} />
-        <Button
-          style={{ position: 'absolute', right: 70, bottom: 80 }}
-          onClick={this.openYearModal.bind(this)}>年代变化</Button>
-        <YearModal
-          visible={this.state.yearModal}
-          handleCancel={() => this.setState({ yearModal: false })}
-          handleOk={() => this.setState({ yearModal: false })}
-        >
-          <Button onClick={() => this.setState({ showWiki: !this.state.showWiki })}>显示百科</Button>
-          {
-            this.state.showWiki &&
-            <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + encodeURIComponent(searchName(this.props.currentYear)) + "朝"} height="600px" width="1240px" seamless frameborder="0"></iframe>
-          }
-          <YearSelector
-            style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}
-            onClick={this.props.onSelectYear}
-            data={this.props.yearArea} />
-        </YearModal> */}
         <RightDrawer
           isShow={this.state.rightDrawShow}
           onClose={() => this.setState({ rightDrawShow: false })}

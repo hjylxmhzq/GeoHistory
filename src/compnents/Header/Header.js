@@ -3,9 +3,9 @@ import { Modal } from 'antd'
 import './Header.css'
 class Header extends Component{
     static defaultProps = {
-        title:'中国历史地理数据展示平台',
+        title:'华夏印象——中国历史地理数据展示平台',
         about:'关于我们',
-        aboutTitle:'ESRI DEMO-历史地理信息展示平台',
+        aboutTitle:'华夏印象——中国历史地理数据展示平台',
 
     }
     constructor(){
@@ -37,8 +37,10 @@ class Header extends Component{
                     footer={null}
                     onCancel={this.handleCancel.bind(this)}
               >
-                    <p>{'简介：该平台展示了唐朝不同年代的疆界范围、人物轨迹及历史事件，并支持查询搜索等功能。'}</p>
-                    <p>{'制作成员：侯骁谋 劳大钊 吴宇东 詹文'}</p>
+                    <p>{'简介：该平台展示了中国自夏朝（公元前2100年）到新中国成立（1949年）以来的疆界范围、历史人物的人生轨迹和历史事件的分布情况，支持查询、搜索、评论等功能。'}</p>
+                    <p>{'制作成员：侯骁谋 胡靖元 胡赛涵 劳大钊'}</p>
+                    <p>{'指导老师：马林兵'}</p>
+                    <p>{'单位：中山大学 地理科学与规划学院'}</p>
               </Modal>
             </div>
         )

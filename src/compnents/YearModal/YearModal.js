@@ -12,7 +12,7 @@ export class YearModal extends React.Component {
           onOk={this.props.handleOk}
           onCancel={this.props.handleCancel}
           centered
-          width={'60%'}
+          width={'65%'}
         >
           {this.props.children}
         </Modal>

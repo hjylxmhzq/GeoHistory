@@ -92,7 +92,7 @@ class MainBox extends Component {
       else this.baseBoundaryFeatureLayer.definitionExpression = undefined
     }
     //事件点显示
-    console.log(this.props.trigger)
+    //console.log(this.props.trigger)
     if(this.baseEventFeatureLayer){
       this.baseEventFeatureLayer.visible = this.props.trigger.showEvent
       if(prevProps.currentEvent !== this.props.currentEvent && this.props.currentEvent!==null){
@@ -361,12 +361,13 @@ class MainBox extends Component {
       this.view.ui.add(zoom)
       this.view.ui.add(compass)
       this.view.ui.add(scaleBar, 'bottom-right');
-      this.view.ui.add(this.sketch, "top-left");
+      //this.view.ui.add(this.sketch, "top-left");
 
     })
   }
 
   changeBoundaryLayer(index) {
+    console.log('change layer')
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
@@ -388,8 +389,10 @@ class MainBox extends Component {
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
     eventLayerOption.url = eventLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
+    console.log(eventLayerOption,peopleLayerOption)
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
-    //this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
+    this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
+
     if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
     this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer,this.baseBoundaryFeatureLayer];
   }

@@ -33,7 +33,7 @@ class App extends Component {
       Trigger: {
         heatmap: false,
         eventHeatmap: false,
-        toolbar: true,
+        toolbar: false,
         comment: true,
         showChar: true,
         showEvent:true,
@@ -118,7 +118,7 @@ class App extends Component {
   }
 
   render() {
-    console.log(this);
+    //console.log(this);
     let experience = []
     let trash = null
     if (this.state.experience && this.state.currentChar !== null) {
@@ -189,7 +189,7 @@ class App extends Component {
             </div>
             <Divider />
             <div className="toolbox_item">
-              <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+              <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
             <Divider />
             <div className="toolbox_item">

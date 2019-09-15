@@ -47,12 +47,12 @@ class YearSelector extends Component {
             series: {
                 name: '疆域面积',
                 type: 'line',
-                color:['#126e82'],
+                color:['#b78b26'],
                 areaStyle: {
-                    color: '#126e82' //折线下方色块颜色
+                    color: '#b78b26' //折线下方色块颜色
                 },
                 data: data.map(function (item) {
-                    return item[1] / 1.56; // 面积数据存在问题，暂时解决
+                    return (item[1] / 1.56).toFixed(0); // 面积数据存在问题，暂时解决
                 }),
                 areaStyle: {}
             }

@@ -150,5 +150,6 @@
   ],
   "devDependencies": {
     "babel-plugin-import": "^1.12.1"
-  }
+  },
+  "homepage":"."
 }

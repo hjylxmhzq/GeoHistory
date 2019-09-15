@@ -89,24 +89,41 @@
 }
 .esri-component.esri-compass.esri-widget--button.esri-widget.esri-interactive{
   position: absolute;
-  left:100px;
+  left:30px;
   top:20px
 }
 .esri-component.esri-zoom.esri-widget{
   position: absolute;
-  left:20px;
+  left:80px;
   top:20px
+}
+.esri-component.esri-scale-bar.esri-widget{
+  position: absolute;
+  right:60px;
+  bottom:20px
 }
 .ant-timeline{
   position: absolute;
-  top:20%;
-  left:200px;
+  top:15%;
+  left:90px;
   padding:20px;
   width: 400px;
   height:500px;
   background-color: rgb(240,240,240,0.5);
   text-align: justify;
   overflow-y: auto
+}
+.ant-timeline-item-content:hover{
+  color: deepskyblue;
+  cursor: pointer;
+  transition: 0.2s;
+  transition-duration:0.5s;
+}
+.ant-timeline-item-head.ant-timeline-item-head-blue{
+  border-color: #63bbd0;
+}
+.ant-timeline-item-head.ant-timeline-item-head-custom.ant-timeline-item-head-blue{
+  background-color: rgba(0,0,0,0.0);
 }
 .ant-timeline-item.ant-timeline-item-last{
   padding-bottom: 0
@@ -141,4 +158,16 @@
 .toolbox_item {
   display: flex;
   justify-content: space-between;
+}
+
+.ant-btn.ant-btn-primary{
+  background-color: #0f95b0;
+  border-color: #0f95b0
+}
+.ant-btn.ant-btn-primary:hover{
+  background-color: #0f95b0b0;
+  border-color: #0f95b0b0
+}
+.ant-switch.ant-switch-checked{
+  background-color: #0f95b0;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import s from './Slider.less';
 import { Slider } from 'antd';
 
-const LABEL_SEP = 2; // slider的label的间隔数，太小会导致年份挤在一起
+const LABEL_SEP = 0.1; // slider的label的间隔数，太小会导致年份挤在一起
 export default function (props) {
   const marks = {};
   const labels = {}; 

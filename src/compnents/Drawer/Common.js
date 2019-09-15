@@ -1,5 +1,6 @@
 import React,{Component} from 'react'
 import {Drawer} from 'antd'
+import { DataAnalysis, EventDataAnalysis } from '../charts';
 
 export class RightDrawer extends Component{
   constructor(){
@@ -10,7 +11,7 @@ export class RightDrawer extends Component{
   }
 
   render(){
-    console.log(this.props.data)
+    //console.log(this.props.data)
     return(
       <Drawer
       title={"检索"}
@@ -22,6 +23,7 @@ export class RightDrawer extends Component{
       onClose={this.props.onClose}
       >
           <div style={{fontSize: 18}}>疆域</div><br/>
+          <DataAnalysis data={this.props.data}/>
           {
               this.props.data.selectedBoundary.map(i => {
                   return (
@@ -34,6 +36,7 @@ export class RightDrawer extends Component{
               })
           }
           <div style={{fontSize: 18}}>事件</div><br/>
+          <EventDataAnalysis data={this.props.data}/>
           {
               this.props.data.selectedEvents.map(i => {
                   return (

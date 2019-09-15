@@ -3,7 +3,7 @@ import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
 import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
-import { Layout, Switch } from 'antd';
+import { Layout, Switch,Divider } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
 import Config from './config';
@@ -12,10 +12,11 @@ import { ToolBox } from './compnents/ToolBox';
 const staticPath = Config.staticPath;
 
 const tilesMap = {
-  'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'StreetWarm',
+  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'Warm',
+  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer': 'PurplishBlue',
   'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer': 'Community',
-  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer': 'Gray',
-  'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'Warm'
+  'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer': 'Satellite',
+  
 };
 
 
@@ -29,22 +30,22 @@ class App extends Component {
       events: [],
       experience: [],
       yearArea: [],
-      currentYear: 0,
-      currentTileMap: 'topo',
-      isCharSelectChangeToAnother: false,
-      isEventSelectChangeToAnother: false,
-      isYearSelectChangeToAnother: false,
       Trigger: {
         heatmap: false,
         eventHeatmap: false,
-        toolbar: true,
+        toolbar: false,
         comment: true,
         showChar: true,
-        showExp: false
+        showEvent:true,
+        showExp: false,
+        showOther: true,
+        track: false
       },
+      currentYear: 69,
+      currentTileMap: 'topo',
       currentChar: null,
-      currentDynasty: "夏",
-      currentEvent: null
+      currentDynasty: "唐",
+      currentEvent: null,
     }
   }
 
@@ -117,6 +118,7 @@ class App extends Component {
   }
 
   render() {
+    //console.log(this);
     let experience = []
     let trash = null
     if (this.state.experience && this.state.currentChar !== null) {
@@ -129,6 +131,7 @@ class App extends Component {
           years={this.state.years}
           charProfiles={this.state.charProfiles}
           events={this.state.events}
+          yearArea={this.state.yearArea}
           tilesMap={tilesMap}
           handleTileSelect={this.onSelectTileMap.bind(this)}
           currentTile={this.state.currentTileMap}
@@ -145,9 +148,13 @@ class App extends Component {
               events={this.state.events}
               yearArea={this.state.yearArea}
               onSelectYear={this.onSelectYear.bind(this)}
+              onSelectDynasty={this.onSelectDynasty.bind(this)}
+              onSelectChar={this.onSelectChar.bind(this)}
+              onSelectEvent={this.onSelectEvent.bind(this)}
               currentYear={this.state.currentYear}
               currentTileMap={this.state.currentTileMap}
               trigger={this.state.Trigger}
+              currentEvent={this.state.currentEvent}
               currentDynasty={this.state.currentDynasty}
               currentChar={this.state.currentChar}
               experience={experience}
@@ -155,31 +162,46 @@ class App extends Component {
           </Content>
           <ToolBox>
             <div className="toolbox_item">
+              <span>{' '}</span>
+            </div>
+            <div className="toolbox_item">
               <span>人物人生轨迹面板</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showExp: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
-            <hr />
+            <Divider />
             <div className="toolbox_item">
-              <span>在地图上显示选中人物</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showChar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+              <span>显示其他国家</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showOther: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
             </div>
-            <hr />
+            <Divider />
+            <div className="toolbox_item">
+              <span>显示人物</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showChar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+            </div>
+            <Divider />
+            <div className="toolbox_item">
+              <span>显示事件</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showEvent: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+            </div>
+            <Divider />
             <div className="toolbox_item">
               <span>历史人物分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ heatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
-            <hr />
+            <Divider />
             <div className="toolbox_item">
               <span>历史事件分布热力图</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ eventHeatmap: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
-            <hr />
+            <Divider />
             <div className="toolbox_item">
-              <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
+              <span>工具栏</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ toolbar: b } } })} checkedChildren="开" unCheckedChildren="关" />
             </div>
-            <hr />
+            <Divider />
+            <div className="toolbox_item">
+              <span>轨迹跟踪</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ track: b } } })} checkedChildren="开" unCheckedChildren="关" />
+            </div>
+            <Divider />
             <div className="toolbox_item">
               <span>开启评论</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ comment: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
           </ToolBox>
-          <EventDrawer eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...Object.values(this.state.events))[this.state.currentEvent] : undefined} />
-          <CharDrawer charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
+          <EventDrawer showComment={this.state.Trigger.comment} eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...this.state.events[this.state.currentDynasty])[this.state.currentEvent] : undefined} />
+          <CharDrawer showComment={this.state.Trigger.comment} charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
         </Layout>
 
       </div>

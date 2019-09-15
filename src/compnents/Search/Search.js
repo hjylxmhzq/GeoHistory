@@ -13,6 +13,40 @@ export class Complete extends Component {
         }
     }
 
+    onSelect(i) {
+        console.log(this.props)
+        if (i.includes(':')) {
+            const dy = i.split(': ')[0];
+            this.props.onSelect({
+                type: 0,
+                payload: dy
+            })
+            let evtOrPpl = i.split(': ')[1];
+            let actionType = evtOrPpl.endsWith('年') ? 3 : this.props.event[dy].findIndex(i => i.HName === evtOrPpl) !== -1 ? 2 : 1;
+            let payload = null;
+            if (actionType === 1) {
+                payload = this.props.people[dy].find(i => i.Name === evtOrPpl)['FID'];
+                this.props.onSelect({
+                    type: actionType,
+                    payload
+                })
+            } else if (actionType === 2) {
+                payload = this.props.event[dy].find(i => i.HName === evtOrPpl)['FID'];
+                console.log(this.props.event[dy].find(i => i.HName === evtOrPpl))
+                this.props.onSelect({
+                    type: actionType,
+                    payload
+                })
+            } else if (actionType === 3) {
+                payload = this.props.year[dy].find(i => i.Year === evtOrPpl)['idx'];
+                this.props.onSelect({
+                    type: actionType,
+                    payload
+                })
+            }
+        }
+    }
+
     initData(value) {
         if (!this.props.year) {
             return null;
@@ -21,14 +55,12 @@ export class Complete extends Component {
         let exist = [];
         Object.keys(this.props.year).forEach(y => {
             this.props.year[y].forEach(c => {
-                if (c.Year.includes(value)) {
-                    if (exist.indexOf(y + ': ' + c.Year) === -1) {
-                        year.push({
-                            title: y,
-                            content: y + ': ' + c.Year
-                        })
-                        exist.push(y + ': ' + c.Year)
-                    }
+                if (exist.indexOf(y + ': ' + c.Year) === -1) {
+                    year.push({
+                        title: y,
+                        content: y + ': ' + c.Year
+                    })
+                    exist.push(y + ': ' + c.Year)
                 }
             })
         });
@@ -115,6 +147,7 @@ export class Complete extends Component {
                     placeholder="搜索"
                     optionLabelProp="value"
                     onSearch={this.handleSearch.bind(this)}
+                    onSelect={this.onSelect.bind(this)}
                 >
                     <Input suffix={<Icon type="search" className="certain-category-icon" />} />
                 </AutoComplete>

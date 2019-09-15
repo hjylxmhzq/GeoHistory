@@ -1,9 +1,128 @@
 export const eventPopUpTemplate = {
-    title: "{HName}",
-    content: "所在地：{HCityName}<br />事件：{HName}"
+    title:'事件信息',
+    content:[
+        {
+            type:'fields',
+            fieldInfos:[
+                {
+                    fieldName:'HName',
+                    label:'名称',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'HCityName',
+                    label:'发生地',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Intro',
+                    label:'简介',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'STime',
+                    label:'开始时间',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'ETime',
+                    label:'结束时间',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                }
+            ]
+        }
+    ]
 };
 
 export const peoplePopUpTemplate = {
-    title: "{Poet}",
-    content: "年代：{Year}<br />所在地：{Place}"
+    title:'人物经历',
+    content:[
+        {
+            type:'fields',
+            fieldInfos:[
+                {
+                    fieldName:'Poet',
+                    label:'姓名',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Year',
+                    label:'年份',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Place',
+                    label:'地点',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Content',
+                    label:'经历',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                }
+            ]
+        }
+    ]
+};
+
+export const boundaryPopUpTemplate = {
+    title:'国家信息',
+    content:[
+        {
+            type:'fields',
+            fieldInfos:[
+                {
+                    fieldName:'Name',
+                    label:'名称',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'Area',
+                    label:'面积（km²）',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                },
+                {
+                    fieldName:'China',
+                    label:'是否属于中国',
+                    format:{
+                        places:0,
+                        digitSeparator:true
+                    }
+                }
+            ]
+        }
+    ]
 };

@@ -1,5 +1,6 @@
 import React,{Component} from 'react'
 import {Drawer, Button,Empty} from 'antd'
+import { CustomComment } from '../Comment';
 
 class EventDrawer extends Component{
   constructor(){
@@ -25,12 +26,12 @@ class EventDrawer extends Component{
       )
     }else{
       content=(
-        <Empty description={'暂无数据'}/>
+        <Empty description={'请选择事件'}/>
       )
     }
     return(
       <div>
-        <Button style={{position:'absolute',right:70,bottom:180}} type="primary" onClick={()=>{this.setState({visible:!this.state.visible})}}>
+        <Button style={{position:'absolute',right:330,top:25}} type="primary" onClick={()=>{this.setState({visible:!this.state.visible})}}>
           事件简介
         </Button>
         <Drawer
@@ -42,6 +43,10 @@ class EventDrawer extends Component{
         style={{marginTop:'60px'}}
         >
           {content}
+          {
+            this.props.showComment &&
+            <CustomComment id={this.props.eventProfile ? this.props.eventProfile.HName : '-1'} />
+          }
         </Drawer>
       </div>
   )}

@@ -1,9 +1,8 @@
 .header{
   height:60px;
   position:relative;
-  background-color:#dc9123;
-  background-blend-mode:multiply;
-  background-image: url('../../image/material.jpg')
+  background-size:cover;
+  background-image: url('../../image/material2.jpg');
 }
 .title {
   position:absolute;

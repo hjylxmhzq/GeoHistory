@@ -12,9 +12,11 @@ class YearSelector extends Component {
         this.charts = React.createRef();
         this.lineChartsInstance = null;
         this.option = null;
+
     }
 
     renderChart(data) {
+        //console.log(data)
         this.lineChartsInstance = echarts.init(this.charts.current);
         this.lineChartsInstance.setOption(this.option = {
             tooltip: {
@@ -45,15 +47,21 @@ class YearSelector extends Component {
             series: {
                 name: '疆域面积',
                 type: 'line',
+                color:['#b78b26'],
+                areaStyle: {
+                    color: '#b78b26' //折线下方色块颜色
+                },
                 data: data.map(function (item) {
-                    return item[1];
+                    return (item[1] / 1.56).toFixed(0); // 面积数据存在问题，暂时解决
                 }),
                 areaStyle: {}
             }
-        });
+        },true);
         this.lineChartsInstance.on('click', 'series', e => {
             const index = e.dataIndex;
-            this.props.onClick(index);
+            const name = e.name
+            console.log(e)
+            this.props.onClick(index,name);
         });
     }
 
@@ -64,6 +72,8 @@ class YearSelector extends Component {
     }
 
     componentDidUpdate() {
+        //console.log(this.renderChart)
+        
         if (this.props.data.length) {
             this.renderChart.call(this, this.props.data);
         }

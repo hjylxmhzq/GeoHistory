@@ -1,0 +1,17 @@
+{
+  "name": "myapi",
+  "version": "1.0.0",
+  "description": "universe api for my server",
+  "main": "index.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "author": "tonyWho",
+  "license": "ISC",
+  "devDependencies": {
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "request": "^2.88.0"
+  }
+}

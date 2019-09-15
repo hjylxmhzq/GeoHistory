@@ -389,7 +389,7 @@ class MainBox extends Component {
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
     eventLayerOption.url = eventLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
-    console.log(eventLayerOption,peopleLayerOption)
+    //console.log(eventLayerOption,peopleLayerOption)
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
     this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
 

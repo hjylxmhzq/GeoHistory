@@ -15,12 +15,13 @@ function createSketch(Obj, Sketch) {
             Obj.selectGrphics.push(event.graphic);
             query.geometry = event.graphic.geometry;
             query.spatialRelationship = "intersects";
+            //Obj.graphicsLayer2.remove(event.graphic)
             Obj.baseBoundaryFeatureLayer.queryFeatures(query).then(function (results) {
                 // prints an array of all the features in the service to the console
-                if (Obj.boundaryhighlight) {
-                    Obj.boundaryhighlight.remove();
-                }
-                Obj.boundaryhighlight = Obj.featureLayerView.highlight(results.features);
+                // if (Obj.boundaryhighlight) {
+                //     Obj.boundaryhighlight.remove();
+                // }
+                // Obj.boundaryhighlight = Obj.featureLayerView.highlight(results.features);
                 if (results.features.length) {
                     for (let feature of results.features) {
                         selectedBoundary.push(feature);
@@ -34,10 +35,10 @@ function createSketch(Obj, Sketch) {
             query.spatialRelationship = "intersects";
             Obj.baseEventFeatureLayer.queryFeatures(query).then(function (results) {
                 // prints an array of all the features in the service to the console
-                if (Obj.eventHightLight) {
-                    Obj.eventHightLight.remove();
-                }
-                Obj.eventHightLight = Obj.featureLayerView.highlight(results.features);
+                // if (Obj.eventHightLight) {
+                //     Obj.eventHightLight.remove();
+                // }
+                // Obj.eventHightLight = Obj.featureLayerView.highlight(results.features);
                 if (results.features.length) {
                     for (let feature of results.features) {
                         selectedEvents.push(feature);
@@ -46,11 +47,6 @@ function createSketch(Obj, Sketch) {
                 }
             });
         }
-    });
-    sketch.on("update", (event) => {
-        // check if the create event's state has changed to complete indicating
-        // the graphic create operation is completed.
-        Obj.setState({ rightDrawShow: true });
     });
     return sketch;
 }

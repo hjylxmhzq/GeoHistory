@@ -43,7 +43,7 @@ class App extends Component {
       },
       currentYear: 69,
       currentTileMap: 'topo',
-      currentChar: null,
+      currentChar: undefined,
       currentDynasty: "唐",
       currentEvent: null,
       currentYearIdx: 69,
@@ -126,7 +126,7 @@ class App extends Component {
     //console.log(this);
     let experience = []
     let trash = null
-    if (this.state.experience && this.state.currentChar !== null) {
+    if (this.state.experience && this.state.currentChar !== undefined) {
       [].concat(...Object.values(this.state.experience)).map((e) => { e["Poet ID"] === String(this.state.currentChar) ? experience.push(e) : trash = undefined })
     }
     return (
@@ -208,7 +208,7 @@ class App extends Component {
             </div>
           </ToolBox>
           <EventDrawer showComment={this.state.Trigger.comment} eventProfile={this.state.events && this.state.currentEvent !== null ? [].concat(...this.state.events[this.state.currentDynasty])[this.state.currentEvent] : undefined} />
-          <CharDrawer showComment={this.state.Trigger.comment} charProfile={this.state.charProfiles && this.state.currentChar !== null ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
+          <CharDrawer showComment={this.state.Trigger.comment} charProfile={this.state.charProfiles && this.state.currentChar !== undefined ? [].concat(...Object.values(this.state.charProfiles))[this.state.currentChar] : undefined} />
         </Layout>
 
       </div>

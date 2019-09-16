@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button,Timeline, Empty, Icon,message,Slider } from 'antd';
+import { Button,Timeline, Empty, Icon,message,Slider,Progress } from 'antd';
 import EsriLoader from 'esri-loader'
 import s from './mainBox.less';
 import { createSketch, heatMapRenderer, simpleMarkerRender, simplePeopleMarkerRender, boundaryLayerOption, eventLayerOption, peopleLayerOption } from './utils';
@@ -61,7 +61,10 @@ class MainBox extends Component {
       case 3: this.props.onSelectYear(action.payload); break;
     }
   }
+
   componentDidUpdate(prevProps, prevState) {
+    console.log('update')
+    console.log(this.props.currentDynasty)
     if (prevProps.currentYear !== this.props.currentYear ||
       prevProps.trigger.eventHeatmap !== this.props.trigger.eventHeatmap ||
       prevProps.trigger.heatmap !== this.props.trigger.heatmap) this.changeBoundaryLayer.call(this, this.props.currentYear);
@@ -123,7 +126,7 @@ class MainBox extends Component {
       if (this.polyline) this.polyline.paths = []
       return
     }
-    if (prevChar >= 0 && this.props.currentChar === undefined) {
+    if (prevChar !== undefined && this.props.currentChar === undefined) {
       if (this.t) {
         clearInterval(this.t)
         this.t = null
@@ -132,7 +135,7 @@ class MainBox extends Component {
       if (this.graphic) this.graphic.geometry = undefined
       if (this.polyline) this.polyline.paths = []
       if (this.basePeopleFeatureLayer) this.basePeopleFeatureLayer.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
-    }else if(prevChar >= 0 && this.props.currentChar >= 0 && prevChar!==this.props.currentChar){
+    }else if(prevChar !== undefined && this.props.currentChar !== undefined && prevChar!==this.props.currentChar){
         if (this.t) {
           clearInterval(this.t)
           this.t = null
@@ -317,10 +320,10 @@ class MainBox extends Component {
       this.map = new Map({
         basemap,
         layers: [
-          this.graphicsLayer2,
+          this.baseBoundaryFeatureLayer,
           this.baseEventFeatureLayer,
           this.basePeopleFeatureLayer,
-          this.baseBoundaryFeatureLayer,
+          this.graphicsLayer2
         ]
       });
       this.view = new MapView({
@@ -367,7 +370,7 @@ class MainBox extends Component {
   }
 
   changeBoundaryLayer(index) {
-    console.log('change layer')
+    console.log('change layer:',index,this.props.currentDynasty,this.state.currentDynasty)
     if (!this.map || !this.FeatureLayer) {
       return 0;
     }
@@ -381,20 +384,29 @@ class MainBox extends Component {
     if (this.basePeopleFeatureLayer) {
       if (this.props.trigger.heatmap) {
         peopleLayerOption.renderer = heatMapRenderer;
+        
+        
       } else {
         peopleLayerOption.renderer = simplePeopleMarkerRender;
       }
     }
+    if(!this.props.currentChar) peopleLayerOption.definitionExpression = `Sequence=0 and Dynasty='${this.props.currentDynasty}'`
+    else peopleLayerOption.definitionExpression = `Poet_ID =${this.props.currentChar}`
+    this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
+
     boundaryLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + index;
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
+    console.log(eventLayerIndex)
     eventLayerOption.url = eventLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
-    //console.log(eventLayerOption,peopleLayerOption)
+    console.log(eventLayerOption,peopleLayerOption,boundaryLayerOption)
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
-    this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
+    
+    
+      
 
-    if (this.state.currentDynasty !== this.props.currentDynasty) { peopleLayerOption.definitionExpression = 'Sequence=0 and Dynasty_ID=' + String(this.props.currentDynasty) }
-    this.map.layers = [this.graphicsLayer2, this.baseEventFeatureLayer, this.basePeopleFeatureLayer,this.baseBoundaryFeatureLayer];
+
+    this.map.layers = [this.baseBoundaryFeatureLayer, this.baseEventFeatureLayer, this.basePeopleFeatureLayer,this.graphicsLayer2];
   }
 
   openYearModal() {

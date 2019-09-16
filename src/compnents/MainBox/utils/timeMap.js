@@ -31,7 +31,7 @@ export const nameMap = {
     '三国': [38, 41],
     '晋': [41, 47],
     '十六国': [47, 51],
-    '南北': [51, 61],
+    '南北朝': [51, 61],
     '隋': [61, 69],
     '唐': [69, 82],
     '五代十国': [82, 91],
@@ -49,6 +49,7 @@ export function searchKey(dy) {
             result = parseInt(i);
         }
     })
+    if(dy===134) result=19
     return result;
 }
 

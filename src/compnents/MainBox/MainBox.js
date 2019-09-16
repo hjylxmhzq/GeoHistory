@@ -419,6 +419,7 @@ class MainBox extends Component {
         if (i) {
           this.changeBoundaryLayer.call(this, i);
         }
+        this.props.onCurrentYearIdxChange(i);
         this.setState({ sliderValue: i });
       }
       else {

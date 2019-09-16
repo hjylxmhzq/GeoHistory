@@ -18,7 +18,7 @@ class LeftSider extends Component {
       yearLabel: undefined,
       showYearModal: false,
       showWiki:false,
-      currentYear: ['唐', '619年'],
+      currentYear: ['唐', '619年', 69],
       currentPeople: null,
       currentEvent: null
     };
@@ -38,7 +38,7 @@ class LeftSider extends Component {
       this.props.onSelectDynasty(dynasty)
     }
     if(this.props.onSelectYear) this.props.onSelectYear(idx);
-    this.setState({ currentYear: [dynasty, year]});
+    this.setState({ currentYear: [dynasty, year, idx]});
   }
 
   handleBarClick(idx,name){
@@ -136,7 +136,7 @@ class LeftSider extends Component {
         </div>
       </div>
       <div className={s.chartContainer}>
-          <YearSelector onClick={this.handleBarClick.bind(this)}  data={this.props.yearArea} />
+          <YearSelector center={this.props.currentYearIdx} onClick={this.handleBarClick.bind(this)}  data={this.props.yearArea} />
       </div>
       <div className={s.yearModal}>
         <Button type={'primary'} onClick={this.openYearModal.bind(this)}>年代百科</Button>
@@ -153,6 +153,7 @@ class LeftSider extends Component {
           <YearSelector
             style={{ position: 'relative', left: 0, right: 0, bottom: 0}}
             onClick={this.handleBarClick.bind(this)}
+            center={this.state.currentYear[2]}
             data={this.props.yearArea} />
         </YearModal>
       </div>

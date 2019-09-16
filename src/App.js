@@ -46,6 +46,7 @@ class App extends Component {
       currentChar: null,
       currentDynasty: "唐",
       currentEvent: null,
+      currentYearIdx: 69,
     }
   }
 
@@ -91,6 +92,10 @@ class App extends Component {
   onSelectChar(charFID) {
     this.setState({ currentChar: charFID })
 
+  }
+
+  onCurrentYearIdxChange(idx) {
+    this.setState({ currentYearIdx: idx });
   }
 
   onSelectEvent(eventFID) {
@@ -139,11 +144,13 @@ class App extends Component {
           onSelectDynasty={this.onSelectDynasty.bind(this)}
           onSelectChar={this.onSelectChar.bind(this)}
           onSelectEvent={this.onSelectEvent.bind(this)}
+          currentYearIdx={this.state.currentYearIdx}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>
             <MainBox
               years={this.state.years}
+              onCurrentYearIdxChange={this.onCurrentYearIdxChange.bind(this)}
               charProfiles={this.state.charProfiles}
               events={this.state.events}
               yearArea={this.state.yearArea}

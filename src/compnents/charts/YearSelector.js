@@ -15,7 +15,7 @@ class YearSelector extends Component {
 
     }
 
-    renderChart(data) {
+    renderChart(data, startValue=0, endValue=131) {
         //console.log(data)
         this.lineChartsInstance = echarts.init(this.charts.current);
         this.lineChartsInstance.setOption(this.option = {
@@ -36,7 +36,8 @@ class YearSelector extends Component {
                 name: '面积'
             },
             dataZoom: [{
-                startValue: '2014-06-01'
+                startValue,
+                endValue
             }, {
                 type: 'inside'
             }],
@@ -75,11 +76,17 @@ class YearSelector extends Component {
         //console.log(this.renderChart)
         
         if (this.props.data.length) {
-            this.renderChart.call(this, this.props.data);
+            let startValue, endValue;
+            if (this.props.center) {
+                startValue = this.props.center - 2 < 0 ? 0 : this.props.center - 10;
+                endValue = this.props.center + 2;
+            }
+            this.renderChart.call(this, this.props.data, startValue, endValue);
         }
     }
 
     render() {
+        console.log(this)
         return (
             <div style={this.props.style} className={s.charts}>
                 <div  ref={this.charts}></div>

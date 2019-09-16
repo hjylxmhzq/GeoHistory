@@ -55,12 +55,14 @@ export class Complete extends Component {
         let exist = [];
         Object.keys(this.props.year).forEach(y => {
             this.props.year[y].forEach(c => {
-                if (exist.indexOf(y + ': ' + c.Year) === -1) {
-                    year.push({
-                        title: y,
-                        content: y + ': ' + c.Year
-                    })
-                    exist.push(y + ': ' + c.Year)
+                if (y.includes(value)) {
+                    if (exist.indexOf(y + ': ' + c.Year) === -1) {
+                        year.push({
+                            title: y,
+                            content: y + ': ' + c.Year
+                        })
+                        exist.push(y + ': ' + c.Year)
+                    }
                 }
             })
         });

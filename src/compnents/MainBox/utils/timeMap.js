@@ -17,7 +17,7 @@ export const timeMap = {
     15: [103, 111],
     16: [111, 117],
     17: [117, 128],
-    18: [128, 134]
+    18: [128, 134],
 }
 
 export const nameMap = {
@@ -39,7 +39,7 @@ export const nameMap = {
     '元': [103, 111],
     '民': [111, 117],
     '清': [117, 128],
-    '民国': [128, 134]
+    '民国': [128, 134],
 }
 
 export function searchKey(dy) {
@@ -49,6 +49,7 @@ export function searchKey(dy) {
             result = parseInt(i);
         }
     })
+    if(dy===134) result=19
     return result;
 }
 

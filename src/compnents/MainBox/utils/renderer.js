@@ -7,9 +7,9 @@ export const renderer = {
         value: '0',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [51, 51, 204, 0.5],
+            color: [178,187,190,0.7],
             outline: {  // autocasts as new SimpleLineSymbol()
-                color: [220, 220, 220, 0.5],
+                color: [220, 220, 220, 0.7],
                 width: "0.5px"
             }
         }
@@ -18,9 +18,9 @@ export const renderer = {
         value: '1',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [151, 51, 204, 0.5],
+            color: [18, 110, 130, 0.7],
             outline: {  // autocasts as new SimpleLineSymbol()
-                color: [220, 220, 220, 0.5],
+                color: [220, 220, 220, 0.7],
                 width: "0.5px"
             }
         }
@@ -29,9 +29,9 @@ export const renderer = {
         value: '2',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [51, 51, 44, 0.5],
+            color: [18, 161, 130, 0.7],
             outline: {  // autocasts as new SimpleLineSymbol()
-                color: [220, 220, 220, 0.5],
+                color: [220, 220, 220, 0.7],
                 width: "0.5px"
             }
         }
@@ -40,9 +40,306 @@ export const renderer = {
         value: '3',
         symbol: {
             type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-            color: [251, 51, 204, 0.5],
+            color: [26, 104, 64, 0.7],
             outline: {  // autocasts as new SimpleLineSymbol()
-                color: [220, 220, 220, 0.5],
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '4',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [190, 201, 54, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '5',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [210, 177, 22, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '6',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [81, 196, 211, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '7',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [97, 154, 195, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '8',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [192, 147, 81, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '9',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [183, 141, 18, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '10',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [150, 194, 78, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '11',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [131, 167, 141, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '12',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [87, 195, 194, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '13',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [20, 145, 168, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '14',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [97, 100, 159, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '15',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [46, 49, 124, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '16',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [126, 22, 113, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '17',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [192, 111, 152, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '18',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [233, 215, 223, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '19',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [147, 181, 207, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '20',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [43, 174, 133, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '21',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [19, 72, 87, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '22',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [178, 207, 135, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '23',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [217, 164, 14, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '24',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [207, 72, 19, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '25',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [112, 136, 125, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '26',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [152, 54, 128, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '27',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [43, 115, 175, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '28',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [36, 128, 103, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '29',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [140, 194, 105, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
+                width: "0.5px"
+            }
+        }
+    },{
+        // All features with value of "West" will be yellow
+        value: '30',
+        symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [207, 117, 67, 0.7],
+            outline: {  // autocasts as new SimpleLineSymbol()
+                color: [220, 220, 220, 0.7],
                 width: "0.5px"
             }
         }
@@ -73,7 +370,7 @@ export const heatMapRenderer = {
 const textSymbol = {
     type: "text", // autocasts as new TextSymbol()
     color: "#4e2d87",
-    text: "\ue643", // esri-icon-map-pin
+    text: "\ue61e", // esri-icon-map-pin
     font: {
         // autocasts as new Font()
         size: 22,

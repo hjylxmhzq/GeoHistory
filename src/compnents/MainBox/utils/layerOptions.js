@@ -11,7 +11,6 @@ export const boundaryLayerOption = {
     url: baseBoundaryFeatureUrl + '69',
     // id: '0',
     visible: true,
-    popupTemplate: boundaryPopUpTemplate,
     renderer,
     labelingInfo
 };

@@ -388,8 +388,9 @@ class MainBox extends Component {
     boundaryLayerOption.url = boundaryLayerOption.url.split('/').slice(0, -1).join('/') + '/' + index;
     this.baseBoundaryFeatureLayer = new this.FeatureLayer(boundaryLayerOption);
     const eventLayerIndex = searchKey(index);
+    console.log(eventLayerIndex)
     eventLayerOption.url = eventLayerOption.url.split('/').slice(0, -1).join('/') + '/' + eventLayerIndex;
-    //console.log(eventLayerOption,peopleLayerOption)
+    console.log(eventLayerOption,peopleLayerOption,boundaryLayerOption)
     this.baseEventFeatureLayer = new this.FeatureLayer(eventLayerOption);
     this.basePeopleFeatureLayer = new this.FeatureLayer(peopleLayerOption);
 

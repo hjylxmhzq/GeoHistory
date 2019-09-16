@@ -1,4 +1,4 @@
-import { eventPopUpTemplate, peoplePopUpTemplate,boundaryPopUpTemplate } from "./popUpTemplate";
+import { eventPopUpTemplate, peoplePopUpTemplate } from "./popUpTemplate";
 import { simpleMarkerRender, simplePeopleMarkerRender, renderer } from "./renderer";
 import { labelingInfo } from './label';
 import config from '../../../config';

@@ -6,7 +6,7 @@ export const labelingInfo = [
             color: "#555",
             haloColor: "black",
             font: {  // autocast as new Font()
-                family: "KaiTi",
+                family: "fangsong",
                 size: 18,
             }
         },

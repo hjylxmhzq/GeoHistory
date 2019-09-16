@@ -369,11 +369,11 @@ export const heatMapRenderer = {
 
 const textSymbol = {
     type: "text", // autocasts as new TextSymbol()
-    color: "#4e2d87",
-    text: "\ue61e", // esri-icon-map-pin
+    color: "#c04851",
+    text: "\ue643", // esri-icon-map-pin
     font: {
         // autocasts as new Font()
-        size: 22,
+        size: 20,
         family: "CalciteWebCoreIcons", // Esri Icon Font
         weight: 'lighter'
     }
@@ -381,7 +381,7 @@ const textSymbol = {
 
 const textPeopleSymbol = {
     type: "text", // autocasts as new TextSymbol()
-    color: "#c29f80",
+    color: "#11659a",
     text: "\ue675", // esri-icon-map-pin
     font: {
         // autocasts as new Font()

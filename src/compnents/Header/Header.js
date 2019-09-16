@@ -3,9 +3,9 @@ import { Modal,Divider } from 'antd'
 import './Header.css'
 class Header extends Component{
     static defaultProps = {
-        title:'华夏印象——中国历史地理数据展示平台',
+        title:'华夏印象——中国历史地理信息平台',
         about:'关于我们',
-        aboutTitle:'华夏印象——中国历史地理数据展示平台',
+        aboutTitle:'华夏印象——中国历史地理信息平台',
 
     }
     constructor(){

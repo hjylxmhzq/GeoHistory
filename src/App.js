@@ -145,6 +145,7 @@ class App extends Component {
           onSelectChar={this.onSelectChar.bind(this)}
           onSelectEvent={this.onSelectEvent.bind(this)}
           currentYearIdx={this.state.currentYearIdx}
+          onCurrentYearIdxChange={this.onCurrentYearIdxChange.bind(this)}
         />
         <Layout style={{ position: 'relative', height: 'calc(100% - 60px)' }}>
           <Content style={{ position: 'relative' }}>

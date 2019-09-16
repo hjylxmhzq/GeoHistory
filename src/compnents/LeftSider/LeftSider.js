@@ -136,7 +136,7 @@ class LeftSider extends Component {
         </div>
       </div>
       <div className={s.chartContainer}>
-          <YearSelector center={this.props.currentYearIdx} onClick={this.handleBarClick.bind(this)}  data={this.props.yearArea} />
+          <YearSelector onCurrentYearIdxChange={this.props.onCurrentYearIdxChange} center={this.props.currentYearIdx} onClick={this.handleBarClick.bind(this)}  data={this.props.yearArea} />
       </div>
       <div className={s.yearModal}>
         <Button type={'primary'} onClick={this.openYearModal.bind(this)}>年代百科</Button>
@@ -151,6 +151,7 @@ class LeftSider extends Component {
             <iframe name="wiki_frame" title="baike" src={"https://baike.baidu.com/item/" + wikiname} height="600px" width="1240px" align="absmiddle" seamless frameborder="0"></iframe>
           }
           <YearSelector
+            onCurrentYearIdxChange={this.props.onCurrentYearIdxChange}
             style={{ position: 'relative', left: 0, right: 0, bottom: 0}}
             onClick={this.handleBarClick.bind(this)}
             center={this.state.currentYear[2]}

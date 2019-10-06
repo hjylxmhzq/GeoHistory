@@ -3,20 +3,21 @@ import Header from './compnents/Header/Header'
 import LeftSider from './compnents/LeftSider/LeftSider'
 import MainBox from './compnents/MainBox/MainBox'
 import EventDrawer from './compnents/Drawer/EventDrawer'
-import { Layout, Switch,Divider } from 'antd';
+import { Layout, Switch, Divider, notification } from 'antd';
 import './App.css';
 import CharDrawer from './compnents/Drawer/CharDrawer';
 import Config from './config';
 import { ToolBox } from './compnents/ToolBox';
 
 const staticPath = Config.staticPath;
+const jsonPath = Config.jsonPath;
 
 const tilesMap = {
   'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetWarm/MapServer': 'Warm',
   'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer': 'PurplishBlue',
   'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer': 'Community',
   'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer': 'Satellite',
-  
+
 };
 
 
@@ -36,7 +37,7 @@ class App extends Component {
         toolbar: false,
         comment: true,
         showChar: true,
-        showEvent:true,
+        showEvent: true,
         showExp: false,
         showOther: true,
         track: false
@@ -48,6 +49,7 @@ class App extends Component {
       currentEvent: null,
       currentYearIdx: 69,
     }
+    this.userValid = true;
   }
 
   onSelectYear(id) {
@@ -102,14 +104,62 @@ class App extends Component {
     this.setState({ currentEvent: eventFID })
   }
 
+  fetchData(url) {
+    const m = document.cookie.match(/cid=(\d+)/);
+    let sessionId;
+    if (m) {
+      sessionId = m[1];
+    } else {
+      this.userValid = false;
+      //alert('登录信息失效，请重新登录')
+      //window.location.href = '/esri/login/login'
+    }
+    return fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'sessionId='+sessionId
+    }).then(res => {
+      if (res.status === 403) {
+        this.userValid = false;
+        //alert('登录信息失效，请重新登录')
+        //window.location.href = '/esri/login/login';
+      }
+      return res.json();
+    })
+  }
+
   componentDidMount() {
-    const yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
-    const profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
-    const eventData = fetch(staticPath + 'json/event.json').then(res => res.json())
-    const experienceData = fetch(staticPath + 'json/experience.json').then(res => res.json())
-    const yearArea = fetch(staticPath + 'json/area.json').then(res => res.json())
+    let yearData, profileData, eventData, experienceData, yearArea;
+    if (window.location.search.includes('mode=dev')) {
+      yearData = fetch(staticPath + 'json/year.json').then(res => res.json())
+      profileData = fetch(staticPath + 'json/profile.json').then(res => res.json())
+      eventData = fetch(staticPath + 'json/event.json').then(res => res.json())
+      experienceData = fetch(staticPath + 'json/experience.json').then(res => res.json())
+      yearArea = fetch(staticPath + 'json/area.json').then(res => res.json())
+    } else {
+      yearData = this.fetchData(jsonPath + 'year');
+      profileData = this.fetchData(jsonPath + 'profile');
+      eventData = this.fetchData(jsonPath + 'event');
+      experienceData = this.fetchData(jsonPath + 'experience');
+      yearArea = this.fetchData(jsonPath + 'area');
+    }
+    notification.open({
+      message: '提示',
+      description:
+        <p>由于TLS证书原因，首次使用请先打开<a>https://arcserver.tony-space.top:8001/arcgis/</a>，并点击允许访问（推荐使用Chrome浏览器）</p>,
+    });
     Promise.all([yearData, profileData, eventData, experienceData, yearArea]).then((dataList) => {
-      console.log(dataList)
+      if (dataList[0] && dataList[0].data) {
+        dataList =  dataList.map(i => i.data);
+      }
+      if (!this.userValid) {
+        alert('登录信息失效，请重新登录');
+        window.location.href = '/esri/login/login';
+      }
       this.setState({
         years: this.processYear(dataList[0]),
         charProfiles: dataList[1],
@@ -177,7 +227,7 @@ class App extends Component {
             </div>
             <Divider />
             <div className="toolbox_item">
-              <span>显示其他国家</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showOther: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked/>
+              <span>显示其他国家</span><Switch onChange={b => this.setState({ Trigger: { ...this.state.Trigger, ...{ showOther: b } } })} checkedChildren="开" unCheckedChildren="关" defaultChecked />
             </div>
             <Divider />
             <div className="toolbox_item">

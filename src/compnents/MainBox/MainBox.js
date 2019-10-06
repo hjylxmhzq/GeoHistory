@@ -108,7 +108,7 @@ class MainBox extends Component {
             let highlight = layerView.highlight(feature)
             setTimeout(() => {
               highlight.remove()
-            },1000)
+            },1500)
           })
         });
       }

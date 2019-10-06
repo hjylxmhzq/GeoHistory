@@ -9,7 +9,7 @@ body,html { height: 100%; overflow: hidden; margin: 0}
 .inner {
     height:1080px;
     width: 25231px;
-    background: url(cut.gif) no-repeat fixed;
+    background: url(cut.jpg) no-repeat fixed;
     background-size:cover;
     position: absolute;
     z-index: -1;
